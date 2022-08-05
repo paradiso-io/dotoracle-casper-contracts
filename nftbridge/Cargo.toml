@@ -1,0 +1,23 @@
+[package]
+name = "contract"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+casper-contract = "1.4.4"
+casper-types = "1.5.0"
+base64 = { version = "0.13.0", default-features = false, features = ["alloc"] }
+serde = { version = "1", features = ["derive", "alloc"], default-features = false }
+casper-serde-json-wasm = { git = "https://github.com/darthsiroftardis/casper-serde-json-wasm", branch = "casper-no-std"}
+
+[[bin]]
+name = "contract"
+path = "src/main.rs"
+bench = false
+doctest = false
+test = false
+
+[profile.release]
+codegen-units = 1
+lto = true
+
