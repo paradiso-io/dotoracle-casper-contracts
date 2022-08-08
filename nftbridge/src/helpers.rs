@@ -4,9 +4,8 @@ use casper_types::bytesrepr::FromBytes;
 use casper_contract::{contract_api::{runtime, storage}, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{URef, system::CallStackElement, U256};
 use core::convert::TryInto;
-use core::ops::Add;
 use alloc::string::{String, ToString};
-use crate::erc20_error::Error;
+use crate::error::Error;
 use crate::address::Address;
 // Helper functions
 
