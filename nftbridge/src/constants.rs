@@ -25,13 +25,12 @@ pub const USER_REWARD_PER_TOKEN_PAID_KEY_NAME: &str = "user_reward_per_token_pai
 // Entry points
 
 pub const REQUEST_BRIDGE_ENTRY_POINT_NAME: &str = "request_bridge_nft";
-
 pub const UNLOCK_NFT_ENTRY_POINT_NAME: &str = "unlock_nft";
-
-pub const GET_REWARD_ENTRY_POINT_NAME: &str = "get_reward";
+pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
 
 // Runtime argument names
 
+pub const ARG_CONTRACT_OWNER: &str = "contract_owner";
 pub const ARG_TO_CHAINID:  &str = "to_chainid";
 pub const ARG_FROM_CHAINID:  &str = "from_chainid";
 pub const ARG_NFT_CONTRACT_HASH:  &str = "nft_contract_hash";
@@ -102,7 +101,9 @@ pub const ARG_COLLECTION_NAME: &str = "collection_name";
 pub const ARG_COLLECTION_SYMBOL: &str = "collection_symbol";
 pub const ARG_TOTAL_TOKEN_SUPPLY: &str = "total_token_supply";
 pub const ARG_TOKEN_ID: &str = "token_id";
+pub const ARG_TOKEN_IDS: &str = "token_ids";
 pub const ARG_TOKEN_HASH: &str = "token_hash";
+pub const ARG_TOKEN_HASHES: &str = "token_hashes";
 pub const ARG_TOKEN_OWNER: &str = "token_owner";
 pub const ARG_TARGET_KEY: &str = "target_key";
 pub const ARG_SOURCE_KEY: &str = "source_key";

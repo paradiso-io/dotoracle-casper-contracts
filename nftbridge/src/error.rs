@@ -9,7 +9,8 @@ pub enum Error {
     InvalidIdentifierMode = 4,
     MissingTokenID = 5,
     InvalidTokenIdentifier = 6,
-    FailedToGetArgBytes = 7
+    FailedToGetArgBytes = 7,
+    InvalidContractOwner = 8
 }
 
 impl From<Error> for ApiError {

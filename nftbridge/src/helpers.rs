@@ -21,13 +21,11 @@ pub(crate) fn get_key<T: FromBytes + CLTyped>(name: &str) -> Option<T> {
 }
 
 pub(crate) fn get_key_from_address(addr: &Address) -> Key {
-    let mut k = "".to_string();
-    if addr.as_account_hash().is_some() {
-        k = addr.as_account_hash().unwrap().to_formatted_string();
-    } else {
-        k = addr.as_contract_package_hash().unwrap().to_formatted_string();
-    }
-    return Key::from_formatted_str(&k).unwrap();
+    let self_key = match *addr {
+        Address::Account(acc) => Key::from(acc),
+        Address::Contract(contract_package_hash) => Key::from(contract_package_hash),
+    };
+    self_key
 }
 
 pub(crate) fn get_self_key() -> Key {
@@ -92,6 +90,11 @@ pub(crate) fn get_immediate_caller_address() -> Result<Address, Error> {
     get_immediate_call_stack_item()
         .map(call_stack_element_to_address)
         .ok_or(Error::InvalidContext)
+}
+
+pub(crate) fn get_immediate_caller_key() -> Key {
+    let addr = get_immediate_caller_address().unwrap_or_revert();
+    get_key_from_address(&addr)
 }
 
 #[no_mangle]

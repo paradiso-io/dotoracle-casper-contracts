@@ -17,6 +17,8 @@ use casper_types::{
     ApiError,
 };
 
+use crate::constants::*;
+
 use crate::error::Error;
 
 use crate::{
@@ -75,6 +77,37 @@ pub(crate) fn get_token_identifier_from_runtime_args(
         .map(TokenIdentifier::new_hash)
         .unwrap_or_revert(),
     }
+}
+
+pub(crate) fn get_token_identifiers_from_runtime_args(
+    identifier_mode: &NFTIdentifierMode,
+) -> Vec<TokenIdentifier> {
+    match identifier_mode {
+        NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
+            ARG_TOKEN_IDS,
+            Error::MissingTokenID,
+            Error::InvalidTokenIdentifier,
+        )
+        .unwrap_or_revert()
+        .iter()
+        .map(|identifier| TokenIdentifier::new_index(*identifier))
+        .collect::<Vec<_>>(),
+        NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
+            ARG_TOKEN_HASHES,
+            Error::MissingTokenID,
+            Error::InvalidTokenIdentifier,
+        )
+        .unwrap_or_revert()
+        .iter()
+        .map(|identier |TokenIdentifier::new_hash(identier.clone()))
+        .collect::<Vec<_>>()
+    }
+}
+
+pub(crate) fn get_identifier_mode_from_runtime_args() -> NFTIdentifierMode {
+    let identifier_mode_u8: u8 = runtime::get_named_arg(ARG_IDENTIFIER_MODE);
+    let identifier_mode = NFTIdentifierMode::try_from(identifier_mode_u8).unwrap_or(NFTIdentifierMode::Ordinal);
+    identifier_mode
 }
 
 pub(crate) fn get_named_arg_with_user_errors<T: FromBytes>(
