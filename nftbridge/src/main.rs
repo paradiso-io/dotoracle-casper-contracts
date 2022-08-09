@@ -12,11 +12,10 @@ mod entry_points;
 mod error;
 mod helpers;
 mod named_keys;
-mod utils;
 
 use crate::constants::*;
 use crate::error::Error;
-use crate::utils::*;
+use crate::helpers::*;
 use alloc::{string::String, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
