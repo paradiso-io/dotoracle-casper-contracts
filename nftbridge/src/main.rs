@@ -26,6 +26,7 @@ use casper_types::{
 };
 use helpers::{get_immediate_caller_key, get_self_key};
 
+#[no_mangle]
 pub extern "C" fn init() {
     storage::new_dictionary(REQUEST_IDS).unwrap_or_revert_with(Error::FailedToCreateDictionary);
     storage::new_dictionary(UNLOCK_IDS)
