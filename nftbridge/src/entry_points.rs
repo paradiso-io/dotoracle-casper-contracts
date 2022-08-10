@@ -1,10 +1,10 @@
-use alloc::{string::String, vec, boxed::Box};
+use alloc::{boxed::Box, string::String, vec};
 
 use crate::constants::*;
 
 use casper_types::{
-    U256, CLType, CLTyped, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Parameter
-    };
+    CLType, CLTyped, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Parameter, U256,
+};
 
 fn request_bridge_nft() -> EntryPoint {
     EntryPoint::new(
@@ -17,7 +17,7 @@ fn request_bridge_nft() -> EntryPoint {
             Parameter::new(ARG_NFT_CONTRACT_HASH, String::cl_type()),
             Parameter::new(ARG_RECEIVER_ADDRESS, String::cl_type()),
             Parameter::new(ARG_REQUEST_ID, String::cl_type()),
-            ],
+        ],
         CLType::String,
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -34,7 +34,7 @@ fn unlock_nft() -> EntryPoint {
             Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
             Parameter::new(ARG_NFT_CONTRACT_HASH, String::cl_type()),
             Parameter::new(ARG_TARGET_KEY, CLType::Key),
-            Parameter::new(ARG_UNLOCK_ID, String::cl_type())
+            Parameter::new(ARG_UNLOCK_ID, String::cl_type()),
         ],
         CLType::Unit,
         EntryPointAccess::Public,
@@ -45,10 +45,18 @@ fn unlock_nft() -> EntryPoint {
 fn transfer_owner() -> EntryPoint {
     EntryPoint::new(
         String::from(TRANSFER_OWNER_ENTRY_POINT_NAME),
-        vec![
-            Parameter::new(ARG_CONTRACT_OWNER, CLType::Key)
-        ],
+        vec![Parameter::new(ARG_CONTRACT_OWNER, CLType::Key)],
         CLType::Key,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
+
+fn init() -> EntryPoint {
+    EntryPoint::new(
+        String::from(INIT_ENTRY_POINT_NAME),
+        vec![],
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     )
@@ -56,11 +64,10 @@ fn transfer_owner() -> EntryPoint {
 
 /// Returns the default set of ERC20 token entry points.
 pub(crate) fn default() -> EntryPoints {
-    
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(request_bridge_nft());
     entry_points.add_entry_point(unlock_nft());
     entry_points.add_entry_point(transfer_owner());
+    entry_points.add_entry_point(init());
     entry_points
-    
 }

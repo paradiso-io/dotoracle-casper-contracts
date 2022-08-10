@@ -3,7 +3,6 @@ use casper_contract::{contract_api::storage, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{contracts::NamedKeys, Key, U256};
 
 use crate::constants::*;
-use crate::error::Error;
 pub fn default(nft_bridge_contract_name: String, contract_owner: Key) -> NamedKeys {
     let mut named_keys = NamedKeys::new();
 
@@ -19,10 +18,6 @@ pub fn default(nft_bridge_contract_name: String, contract_owner: Key) -> NamedKe
         REQUEST_INDEX.to_string(),
         Key::from(storage::new_uref(U256::zero())),
     );
-    storage::new_dictionary(REQUEST_IDS)
-        .unwrap_or_revert_with(Error::FailedToCreateDictionary);
-    storage::new_dictionary(UNLOCK_IDS)
-        .unwrap_or_revert_with(Error::FailedToCreateDictionaryUnlockIds);
 
     named_keys
 }

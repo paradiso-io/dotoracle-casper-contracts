@@ -27,6 +27,7 @@ pub const USER_REWARD_PER_TOKEN_PAID_KEY_NAME: &str = "user_reward_per_token_pai
 pub const REQUEST_BRIDGE_ENTRY_POINT_NAME: &str = "request_bridge_nft";
 pub const UNLOCK_NFT_ENTRY_POINT_NAME: &str = "unlock_nft";
 pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
+pub const INIT_ENTRY_POINT_NAME: &str = "init";
 
 // Runtime argument names
 

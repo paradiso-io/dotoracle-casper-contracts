@@ -26,6 +26,12 @@ use casper_types::{
 };
 use helpers::{get_immediate_caller_key, get_self_key};
 
+pub extern "C" fn init() {
+    storage::new_dictionary(REQUEST_IDS).unwrap_or_revert_with(Error::FailedToCreateDictionary);
+    storage::new_dictionary(UNLOCK_IDS)
+        .unwrap_or_revert_with(Error::FailedToCreateDictionaryUnlockIds);
+}
+
 #[no_mangle]
 fn call() {
     let contract_name: String = runtime::get_named_arg(NFT_BRIDGE_CONTRACT_KEY_NAME);
@@ -45,11 +51,13 @@ fn call() {
     );
 
     //{
-        let test_string = "test_string_haha_123-456";
-        let test_string_key = get_unlock_id_key(test_string);
-    //}
+    // let test_string = "test_string_haha_123-456";
+    // let test_string_key = get_unlock_id_key(test_string);
+    // //}
     runtime::put_key(CONTRACT_OWNER_KEY_NAME, contract_owner);
     runtime::put_key(contract_hash_key_name.as_str(), Key::from(contract_hash));
+
+    runtime::call_contract::<()>(contract_hash, INIT_ENTRY_POINT_NAME, runtime_args! {});
 }
 
 #[no_mangle]
