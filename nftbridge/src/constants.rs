@@ -31,10 +31,13 @@ pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
 // Runtime argument names
 
 pub const ARG_CONTRACT_OWNER: &str = "contract_owner";
+pub const ARG_RECEIVER_ADDRESS: &str = "receiver_address";
+pub const ARG_REQUEST_ID: &str = "request_id";
 pub const ARG_TO_CHAINID:  &str = "to_chainid";
 pub const ARG_FROM_CHAINID:  &str = "from_chainid";
 pub const ARG_NFT_CONTRACT_HASH:  &str = "nft_contract_hash";
 pub const ARG_IDENTIFIER_MODE:  &str = "identifier_mode";
+pub const ARG_UNLOCK_ID:  &str = "unlock_id";
 
 /// Name of named-key for `name`.
 pub const NAME_KEY_NAME: &str = "name";
@@ -123,6 +126,9 @@ pub const ARG_CONTRACT_WHITELIST: &str = "contract_whitelist";
 pub const ARG_NFT_METADATA_KIND: &str = "nft_metadata_kind";
 pub const ARG_METADATA_MUTABILITY: &str = "metadata_mutability";
 
+pub const REQUEST_INDEX: &str = "request_index";
+pub const REQUEST_IDS: &str = "request_ids";
+pub const UNLOCK_IDS: &str = "unlock_ids";
 pub const OPERATOR: &str = "operator";
 pub const NUMBER_OF_MINTED_TOKENS: &str = "number_of_minted_tokens";
 pub const INSTALLER: &str = "installer";

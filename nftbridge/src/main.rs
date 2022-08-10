@@ -21,7 +21,9 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs};
+use casper_types::{
+    contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs, U256,
+};
 use helpers::{get_immediate_caller_key, get_self_key};
 
 #[no_mangle]
@@ -41,6 +43,11 @@ fn call() {
         Some(String::from(contract_package_hash_key_name)),
         None,
     );
+
+    //{
+        let test_string = "test_string_haha_123-456";
+        let test_string_key = get_unlock_id_key(test_string);
+    //}
     runtime::put_key(CONTRACT_OWNER_KEY_NAME, contract_owner);
     runtime::put_key(contract_hash_key_name.as_str(), Key::from(contract_hash));
 }
@@ -52,6 +59,33 @@ pub extern "C" fn request_bridge_nft() {
     let user = get_immediate_caller_key();
     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
     let self_key = get_self_key();
+    let request_id: String = runtime::get_named_arg(ARG_REQUEST_ID);
+    if request_id.chars().count() != 64 {
+        runtime::revert(Error::RequestIdIlledFormat);
+    }
+    let decoded = hex::decode(&request_id);
+    if decoded.is_err() {
+        runtime::revert(Error::RequestIdIlledFormat);
+    }
+    if request_id.len() != 64 || decoded.unwrap().len() != 32 {
+        runtime::revert(Error::RequestIdIlledFormat);
+    }
+
+    if get_dictionary_value_from_key::<U256>(REQUEST_IDS, &request_id).is_some() {
+        runtime::revert(Error::RequestIdRepeated);
+    }
+
+    if runtime::get_key(&request_id).is_some() {
+        runtime::revert(Error::RequestIdRepeated);
+    }
+
+    let mut current_request_index: U256 = get_key(REQUEST_INDEX).unwrap();
+    current_request_index = current_request_index + 1;
+
+    write_dictionary_value_from_key(REQUEST_IDS, &request_id, current_request_index);
+
+    set_key(REQUEST_INDEX, current_request_index);
+
     cep78_transfer_from(
         &contract_hash,
         user,
@@ -81,10 +115,16 @@ pub extern "C" fn unlock_nft() -> Result<(), Error> {
         runtime::revert(Error::InvalidAccount);
     }
 
+    let unlock_id: String = runtime::get_named_arg(ARG_UNLOCK_ID);
+    let unlock_id_key = get_unlock_id_key(&unlock_id);
+    if get_dictionary_value_from_key::<bool>(UNLOCK_IDS, &unlock_id_key).is_some() {
+        runtime::revert(Error::UnlockIdRepeated);
+    }
+    write_dictionary_value_from_key(UNLOCK_IDS, &unlock_id_key, true);
+
     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH);
     let identifier_mode = get_identifier_mode_from_runtime_args();
-    let token_identifiers =
-        get_token_identifiers_from_runtime_args(&identifier_mode);
+    let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
     let self_key = get_self_key();
     cep78_transfer_from(

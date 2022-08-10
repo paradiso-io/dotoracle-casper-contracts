@@ -129,6 +129,7 @@ dependencies = [
  "casper-contract",
  "casper-serde-json-wasm",
  "casper-types",
+ "hex",
  "serde",
 ]
 

@@ -10,7 +10,14 @@ pub enum Error {
     MissingTokenID = 5,
     InvalidTokenIdentifier = 6,
     FailedToGetArgBytes = 7,
-    InvalidContractOwner = 8
+    InvalidContractOwner = 8,
+    RequestIdIlledFormat = 9,
+    FailedToCreateDictionary = 10,
+    RequestIdRepeated = 11,
+    MissingKey = 12,
+    SerilizationError = 13,
+    UnlockIdRepeated = 14,
+    FailedToCreateDictionaryUnlockIds = 15,
 }
 
 impl From<Error> for ApiError {

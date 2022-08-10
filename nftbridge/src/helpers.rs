@@ -1,33 +1,30 @@
-use casper_types::{bytesrepr::ToBytes, Key};
-use casper_types::CLTyped;
-use casper_types::bytesrepr::FromBytes;
-use casper_contract::{contract_api::{runtime, storage}, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{URef, system::CallStackElement, U256};
-use core::convert::TryInto;
-use alloc::string::{String, ToString};
-use crate::error::Error;
 use crate::address::Address;
-use serde::{Deserialize, Serialize};
-use alloc::{
-    collections::BTreeMap,
-    vec::Vec,
-};
-use core::convert::TryFrom;
+use crate::error::Error;
+use alloc::string::{String};
+use alloc::{vec::Vec};
 use casper_contract::{
     contract_api::{self},
-    ext_ffi
+    ext_ffi,
 };
+use casper_contract::{
+    contract_api::{runtime, storage},
+    unwrap_or_revert::UnwrapOrRevert,
+};
+use casper_types::bytesrepr::FromBytes;
+use casper_types::CLTyped;
 use casper_types::{
     api_error,
     bytesrepr::{self},
     ApiError,
 };
+use casper_types::{bytesrepr::ToBytes, Key};
+use casper_types::{system::CallStackElement, URef, U256};
+use core::convert::TryFrom;
+use core::convert::TryInto;
 
 use crate::constants::*;
 
-use crate::{
-    ARG_TOKEN_HASH, ARG_TOKEN_ID, error,
-};
+use crate::error;
 
 // Helper functions
 
@@ -180,27 +177,6 @@ pub(crate) fn get_named_arg_size(name: &str) -> Option<usize> {
     }
 }
 
-pub(crate) fn get_token_identifier_from_runtime_args(
-    identifier_mode: &NFTIdentifierMode,
-) -> TokenIdentifier {
-    match identifier_mode {
-        NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<u64>(
-            ARG_TOKEN_ID,
-            Error::MissingTokenID,
-            Error::InvalidTokenIdentifier,
-        )
-        .map(TokenIdentifier::new_index)
-        .unwrap_or_revert(),
-        NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<String>(
-            ARG_TOKEN_HASH,
-            Error::MissingTokenID,
-            Error::InvalidTokenIdentifier,
-        )
-        .map(TokenIdentifier::new_hash)
-        .unwrap_or_revert(),
-    }
-}
-
 pub(crate) fn get_token_identifiers_from_runtime_args(
     identifier_mode: &NFTIdentifierMode,
 ) -> Vec<TokenIdentifier> {
@@ -221,14 +197,15 @@ pub(crate) fn get_token_identifiers_from_runtime_args(
         )
         .unwrap_or_revert()
         .iter()
-        .map(|identier |TokenIdentifier::new_hash(identier.clone()))
-        .collect::<Vec<_>>()
+        .map(|identier| TokenIdentifier::new_hash(identier.clone()))
+        .collect::<Vec<_>>(),
     }
 }
 
 pub(crate) fn get_identifier_mode_from_runtime_args() -> NFTIdentifierMode {
     let identifier_mode_u8: u8 = runtime::get_named_arg(ARG_IDENTIFIER_MODE);
-    let identifier_mode = NFTIdentifierMode::try_from(identifier_mode_u8).unwrap_or(NFTIdentifierMode::Ordinal);
+    let identifier_mode =
+        NFTIdentifierMode::try_from(identifier_mode_u8).unwrap_or(NFTIdentifierMode::Ordinal);
     identifier_mode
 }
 
@@ -291,40 +268,40 @@ impl TokenIdentifier {
         }
         None
     }
+}
 
-    pub(crate) fn get_dictionary_item_key(&self) -> String {
-        match self {
-            TokenIdentifier::Index(token_index) => token_index.to_string(),
-            TokenIdentifier::Hash(hash) => hash.clone(),
-        }
+pub(crate) fn get_uref(name: &str) -> URef {
+    let key = runtime::get_key(name).unwrap_or_revert();
+    key.into_uref().unwrap_or_revert()
+}
+
+pub(crate) fn get_dictionary_value_from_key<T: CLTyped + FromBytes>(
+    dictionary_name: &str,
+    key: &str,
+) -> Option<T> {
+    let seed_uref = get_uref(dictionary_name);
+
+    match storage::dictionary_get::<T>(seed_uref, key) {
+        Ok(maybe_value) => maybe_value,
+        Err(_) => None,
     }
 }
 
-// Metadata mutability is different from schema mutability.
-#[derive(Serialize, Deserialize, Clone)]
-pub(crate) struct MetadataSchemaProperty {
-    name: String,
-    description: String,
-    required: bool,
+pub(crate) fn write_dictionary_value_from_key<T: CLTyped + FromBytes + ToBytes>(
+    dictionary_name: &str,
+    key: &str,
+    value: T,
+) {
+    let seed_uref = get_uref(dictionary_name);
+
+    match storage::dictionary_get::<T>(seed_uref, key) {
+        Ok(None | Some(_)) => storage::dictionary_put(seed_uref, key, value),
+        Err(error) => runtime::revert(error),
+    }
 }
 
-// Using a structure for the purposes of serialization formatting.
-#[derive(Serialize, Deserialize)]
-pub(crate) struct MetadataNFT721 {
-    name: String,
-    symbol: String,
-    token_uri: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub(crate) struct MetadataCEP78 {
-    name: String,
-    token_uri: String,
-    checksum: String,
-}
-
-// Using a structure for the purposes of serialization formatting.
-#[derive(Serialize, Deserialize)]
-pub(crate) struct CustomMetadata {
-    attributes: BTreeMap<String, String>,
+pub(crate) fn get_unlock_id_key(unlock_id: &str) -> String {
+    let unlock_id_bytes = unlock_id.as_bytes();
+    let key_bytes = runtime::blake2b(unlock_id_bytes);
+    hex::encode(&key_bytes)
 }

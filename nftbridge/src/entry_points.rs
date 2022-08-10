@@ -15,6 +15,8 @@ fn request_bridge_nft() -> EntryPoint {
             Parameter::new(ARG_TO_CHAINID, U256::cl_type()),
             Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
             Parameter::new(ARG_NFT_CONTRACT_HASH, String::cl_type()),
+            Parameter::new(ARG_RECEIVER_ADDRESS, String::cl_type()),
+            Parameter::new(ARG_REQUEST_ID, String::cl_type()),
             ],
         CLType::String,
         EntryPointAccess::Public,
@@ -32,6 +34,7 @@ fn unlock_nft() -> EntryPoint {
             Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
             Parameter::new(ARG_NFT_CONTRACT_HASH, String::cl_type()),
             Parameter::new(ARG_TARGET_KEY, CLType::Key),
+            Parameter::new(ARG_UNLOCK_ID, String::cl_type())
         ],
         CLType::Unit,
         EntryPointAccess::Public,
