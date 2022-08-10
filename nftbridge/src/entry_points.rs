@@ -55,7 +55,9 @@ fn transfer_owner() -> EntryPoint {
 fn init() -> EntryPoint {
     EntryPoint::new(
         String::from(INIT_ENTRY_POINT_NAME),
-        vec![],
+        vec![
+            Parameter::new(ARG_CONTRACT_HASH, CLType::Key)
+        ],
         CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,

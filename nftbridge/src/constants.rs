@@ -3,7 +3,7 @@
 pub const NFT_BRIDGE_CONTRACT_KEY_NAME: &str = "dotoracle_nft_bridge_contract";
 
 // Named keys
-
+pub const CONTRACT_HASH_KEY_NAME: &str = "contract_hash";
 pub const CONTRACT_OWNER_KEY_NAME: &str = "contract_owner";
         
 pub const REWARD_RATE_KEY_NAME: &str = "reward_rate";
@@ -30,7 +30,7 @@ pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
 pub const INIT_ENTRY_POINT_NAME: &str = "init";
 
 // Runtime argument names
-
+pub const ARG_CONTRACT_HASH: &str = "contract_hash";
 pub const ARG_CONTRACT_OWNER: &str = "contract_owner";
 pub const ARG_RECEIVER_ADDRESS: &str = "receiver_address";
 pub const ARG_REQUEST_ID: &str = "request_id";

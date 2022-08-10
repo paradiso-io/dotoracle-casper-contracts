@@ -18,6 +18,7 @@ pub enum Error {
     SerilizationError = 13,
     UnlockIdRepeated = 14,
     FailedToCreateDictionaryUnlockIds = 15,
+    ContractAlreadyInitialized = 16
 }
 
 impl From<Error> for ApiError {

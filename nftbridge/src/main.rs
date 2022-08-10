@@ -28,6 +28,11 @@ use helpers::{get_immediate_caller_key, get_self_key};
 
 #[no_mangle]
 pub extern "C" fn init() {
+    if get_key::<Key>(CONTRACT_HASH_KEY_NAME).is_some() {
+        runtime::revert(Error::ContractAlreadyInitialized);
+    }
+    let contract_hash: Key = runtime::get_named_arg(ARG_CONTRACT_HASH);
+    set_key(CONTRACT_HASH_KEY_NAME, contract_hash);
     storage::new_dictionary(REQUEST_IDS).unwrap_or_revert_with(Error::FailedToCreateDictionary);
     storage::new_dictionary(UNLOCK_IDS)
         .unwrap_or_revert_with(Error::FailedToCreateDictionaryUnlockIds);
@@ -58,7 +63,9 @@ fn call() {
     runtime::put_key(CONTRACT_OWNER_KEY_NAME, contract_owner);
     runtime::put_key(contract_hash_key_name.as_str(), Key::from(contract_hash));
 
-    runtime::call_contract::<()>(contract_hash, INIT_ENTRY_POINT_NAME, runtime_args! {});
+    runtime::call_contract::<()>(contract_hash, INIT_ENTRY_POINT_NAME, runtime_args! {
+        ARG_CONTRACT_HASH => Key::from(contract_hash)
+    });
 }
 
 #[no_mangle]
@@ -112,7 +119,7 @@ pub extern "C" fn transfer_owner() -> Result<(), Error> {
     if new_contract_owner != current_contract_owner {
         runtime::revert(Error::InvalidContractOwner);
     }
-    runtime::put_key(CONTRACT_OWNER_KEY_NAME, new_contract_owner);
+    set_key(CONTRACT_OWNER_KEY_NAME, new_contract_owner);
     Ok(())
 }
 
