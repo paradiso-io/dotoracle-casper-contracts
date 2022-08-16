@@ -18,7 +18,11 @@ pub enum Error {
     SerilizationError = 13,
     UnlockIdRepeated = 14,
     FailedToCreateDictionaryUnlockIds = 15,
-    ContractAlreadyInitialized = 16
+    ContractAlreadyInitialized = 16,
+    CallerMustBeAccountHash = 17,
+    TooManyTokenIds = 18,
+    UnlockIdIllFormatted = 19,
+    TxHashUnlockIdIllFormatted = 20
 }
 
 impl From<Error> for ApiError {

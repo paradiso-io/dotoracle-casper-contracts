@@ -13,10 +13,15 @@ mod error;
 mod helpers;
 mod named_keys;
 
+use serde::{Deserialize, Serialize};
+
 use crate::constants::*;
 use crate::error::Error;
 use crate::helpers::*;
-use alloc::{string::String, vec::Vec};
+use alloc::{
+    string::{String, ToString},
+    vec::{self, *},
+};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -25,6 +30,16 @@ use casper_types::{
     contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs, U256,
 };
 use helpers::{get_immediate_caller_key, get_self_key};
+#[derive(Serialize, Deserialize, Clone)]
+pub(crate) struct RequestBridge {
+    nft_contract_hash: Key,
+    identifier_mode: u8,
+    request_id: String,
+    request_index: U256,
+    receiver_address: String,
+    token_ids: Vec<u64>,
+    token_hashes: Vec<String>,
+}
 
 #[no_mangle]
 pub extern "C" fn init() {
@@ -45,8 +60,9 @@ fn call() {
     let contract_package_hash_key_name = String::from(contract_name.clone() + "_package_hash");
 
     let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
+    //let fee_token: Key = runtime::get_named_arg(ARG_FEE_TOKEN_HASH);
 
-    let named_keys: NamedKeys = named_keys::default(contract_name, contract_owner);
+    let named_keys: NamedKeys = named_keys::default(contract_name, contract_owner, None);
 
     // We store contract on-chain
     let (contract_hash, _version) = storage::new_locked_contract(
@@ -63,9 +79,13 @@ fn call() {
     runtime::put_key(CONTRACT_OWNER_KEY_NAME, contract_owner);
     runtime::put_key(contract_hash_key_name.as_str(), Key::from(contract_hash));
 
-    runtime::call_contract::<()>(contract_hash, INIT_ENTRY_POINT_NAME, runtime_args! {
-        ARG_CONTRACT_HASH => Key::from(contract_hash)
-    });
+    runtime::call_contract::<()>(
+        contract_hash,
+        INIT_ENTRY_POINT_NAME,
+        runtime_args! {
+            ARG_CONTRACT_HASH => Key::from(contract_hash)
+        },
+    );
 }
 
 #[no_mangle]
@@ -73,7 +93,10 @@ pub extern "C" fn request_bridge_nft() {
     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH);
     let identifier_mode = get_identifier_mode_from_runtime_args();
     let user = get_immediate_caller_key();
-    let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
+    if user.into_account().is_none() {
+        runtime::revert(Error::CallerMustBeAccountHash);
+    }
+
     let self_key = get_self_key();
     let request_id: String = runtime::get_named_arg(ARG_REQUEST_ID);
     if request_id.chars().count() != 64 {
@@ -87,18 +110,49 @@ pub extern "C" fn request_bridge_nft() {
         runtime::revert(Error::RequestIdIlledFormat);
     }
 
-    if get_dictionary_value_from_key::<U256>(REQUEST_IDS, &request_id).is_some() {
+    if get_dictionary_value_from_key::<String>(REQUEST_IDS, &request_id).is_some() {
         runtime::revert(Error::RequestIdRepeated);
     }
 
-    if runtime::get_key(&request_id).is_some() {
-        runtime::revert(Error::RequestIdRepeated);
+    let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
+    if token_identifiers.len() > 10 {
+        runtime::revert(Error::TooManyTokenIds);
     }
 
     let mut current_request_index: U256 = get_key(REQUEST_INDEX).unwrap();
-    current_request_index = current_request_index + 1;
+    current_request_index = current_request_index.checked_add(U256::one()).unwrap();
 
-    write_dictionary_value_from_key(REQUEST_IDS, &request_id, current_request_index);
+    let receiver_address = runtime::get_named_arg(ARG_RECEIVER_ADDRESS);
+
+    let request_bridge_data = RequestBridge {
+        nft_contract_hash: contract_hash,
+        identifier_mode: identifier_mode as u8,
+        request_id: request_id.clone(),
+        request_index: current_request_index,
+        receiver_address: receiver_address,
+        token_ids: match identifier_mode {
+            NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
+                ARG_TOKEN_IDS,
+                Error::MissingTokenID,
+                Error::InvalidTokenIdentifier,
+            )
+            .unwrap_or_revert(),
+            NFTIdentifierMode::Hash => Vec::new(),
+        },
+        token_hashes: match identifier_mode {
+            NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
+                ARG_TOKEN_HASHES,
+                Error::MissingTokenID,
+                Error::InvalidTokenIdentifier,
+            )
+            .unwrap_or_revert(),
+            NFTIdentifierMode::Ordinal => Vec::new(),
+        },
+    };
+
+    let json_request_data = casper_serde_json_wasm::to_string(&request_bridge_data).unwrap();
+
+    write_dictionary_value_from_key(REQUEST_IDS, &request_id, json_request_data);
 
     set_key(REQUEST_INDEX, current_request_index);
 
@@ -132,15 +186,43 @@ pub extern "C" fn unlock_nft() -> Result<(), Error> {
     }
 
     let unlock_id: String = runtime::get_named_arg(ARG_UNLOCK_ID);
+
+    //verify unlock id
+    let unlock_id_parts: Vec<&str> = unlock_id.split("-").collect();
+    if unlock_id_parts.len() != 6 {
+        runtime::revert(Error::UnlockIdIllFormatted);
+    }
+
+    {
+        if unlock_id_parts[0].len() != 66 || !unlock_id_parts[0].starts_with("0x") {
+            runtime::revert(Error::UnlockIdIllFormatted);
+        }
+        let tx_hash_without_prefix = unlock_id_parts[0].replace("0x", "");
+        let decoded = hex::decode(&tx_hash_without_prefix);
+        if decoded.is_err() {
+            runtime::revert(Error::TxHashUnlockIdIllFormatted);
+        }
+    }
+
     let unlock_id_key = get_unlock_id_key(&unlock_id);
     if get_dictionary_value_from_key::<bool>(UNLOCK_IDS, &unlock_id_key).is_some() {
         runtime::revert(Error::UnlockIdRepeated);
     }
     write_dictionary_value_from_key(UNLOCK_IDS, &unlock_id_key, true);
 
+    let mut origin_contract_address = "hash-".to_string();
+    origin_contract_address.push_str(unlock_id_parts[4]);
     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH);
+    
+    if contract_hash.to_formatted_string() != origin_contract_address {
+        runtime::revert(Error::UnlockIdIllFormatted);
+    }
+
     let identifier_mode = get_identifier_mode_from_runtime_args();
     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
+    if token_identifiers.len() > 10 {
+        runtime::revert(Error::TooManyTokenIds);
+    }
     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
     let self_key = get_self_key();
     cep78_transfer_from(

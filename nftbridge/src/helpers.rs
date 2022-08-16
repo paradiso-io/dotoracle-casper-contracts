@@ -10,6 +10,7 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
+use crate::alloc::string::*;
 use casper_types::bytesrepr::FromBytes;
 use casper_types::CLTyped;
 use casper_types::{
@@ -21,6 +22,7 @@ use casper_types::{bytesrepr::ToBytes, Key};
 use casper_types::{system::CallStackElement, URef, U256};
 use core::convert::TryFrom;
 use core::convert::TryInto;
+use core::u64;
 
 use crate::constants::*;
 
@@ -145,6 +147,7 @@ pub(crate) fn dictionary_read(dictionary_uref: URef, address: Address) -> U256 {
 }
 
 #[repr(u8)]
+#[derive(Copy, Clone)]
 pub enum NFTIdentifierMode {
     Ordinal = 0,
     Hash = 1,
@@ -267,6 +270,19 @@ impl TokenIdentifier {
             return Some(hash);
         }
         None
+    }
+
+    pub(crate) fn to_string(&self) -> String {
+        match self {
+            TokenIdentifier::Index(index) => index.to_string(),
+            TokenIdentifier::Hash(hash) => hash.clone()
+        }
+    }
+    pub(crate) fn from_string(value_string: String, identifier_mode: &NFTIdentifierMode) -> Self {
+        match identifier_mode {
+            NFTIdentifierMode::Ordinal => TokenIdentifier::new_index(value_string.parse::<u64>().unwrap()),
+            NFTIdentifierMode::Hash => TokenIdentifier::new_hash(value_string.into())
+        }
     }
 }
 
