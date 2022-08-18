@@ -242,6 +242,69 @@ const DTOWrappedNFT = class extends CEP78 {
       throw e;
     }
   }
+
+  async mint({
+    keys,
+    tokenIds,
+    metadatas,
+    mintid,
+    paymentAmount,
+    ttl,
+    tokenOwner
+  }) {
+    if (!paymentAmount) {
+      paymentAmount = paymentAmount ? paymentAmount : "1000000000";
+      ttl = ttl ? ttl : DEFAULT_TTL;
+    }
+    let identifierMode = await this.identifierMode()
+   
+    let runtimeArgs = {};
+    metadatas = metadatas.map(e => CLValueBuilder.string(e))
+    if (identifierMode == 0) {
+      tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
+      runtimeArgs = RuntimeArgs.fromMap({
+        token_ids: CLValueBuilder.list(tokenIds),
+        token_meta_datas: CLValueBuilder.list(metadatas),
+        mint_id: CLValueBuilder.string(mintid),
+        tokenOwner: createRecipientAddress(tokenOwner)
+      });
+    } else {
+      tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
+      runtimeArgs = RuntimeArgs.fromMap({
+        token_hashes: CLValueBuilder.list(tokenIds),
+        token_meta_datas: CLValueBuilder.list(metadatas),
+        mint_id: CLValueBuilder.string(mintid),
+        tokenOwner: createRecipientAddress(tokenOwner)
+      });
+    }
+
+    console.log("sending");
+    let trial = 5;
+    while (true) {
+      try {
+        let hash = await this.contractClient.contractCall({
+          entryPoint: "mint",
+          keys: keys,
+          paymentAmount,
+          runtimeArgs,
+          cb: (deployHash) => {
+            console.log("deployHash", deployHash);
+          },
+          ttl,
+        });
+
+        return hash;
+      } catch (e) {
+        trial--
+        if (trial == 0) {
+          throw e;
+        }
+        console.log('waiting 2 seconds')
+        await sleep(3000)
+      }
+    }
+  }
+
   async requestBridgeNFT({
     keys,
     tokenIds,
