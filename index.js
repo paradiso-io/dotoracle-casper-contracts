@@ -4,7 +4,7 @@ const {
   CasperContractClient,
 } = require("casper-js-client-helper");
 
-const CEP78 = require("casper-cep78js");
+const CEP78 = require("./cep78");
 const {
   CLValueBuilder,
   CasperClient,

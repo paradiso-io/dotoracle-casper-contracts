@@ -1,5 +1,5 @@
 {
-  "name": "dotoracle-casper-contracts",
+  "name": "casper-nft-utils",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "blakejs": "^1.2.1",
-    "casper-cep78js": "github:dotoracle/casper-cep78js",
     "casper-js-client-helper": "^1.0.1",
     "casper-js-sdk": "^2.9.1",
     "dotenv": "^16.0.1"
