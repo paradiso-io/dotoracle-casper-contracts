@@ -299,7 +299,7 @@ const DTOWrappedNFT = class extends CEP78 {
         if (trial == 0) {
           throw e;
         }
-        console.log('waiting 2 seconds')
+        console.error('waiting 2 seconds', e)
         await sleep(3000)
       }
     }
