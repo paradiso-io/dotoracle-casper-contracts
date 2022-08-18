@@ -61,9 +61,10 @@ const CEP78 = class {
     }
 
     async identifierMode() {
-        return await contractSimpleGetter(this.nodeAddress, this.contractHash, [
+        let mode = await contractSimpleGetter(this.nodeAddress, this.contractHash, [
             "identifier_mode",
         ]);
+        return mode.toNumber()
     }
 
     async collectionName() {

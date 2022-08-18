@@ -267,7 +267,7 @@ const DTOWrappedNFT = class extends CEP78 {
         token_ids: CLValueBuilder.list(tokenIds),
         token_meta_datas: CLValueBuilder.list(metadatas),
         mint_id: CLValueBuilder.string(mintid),
-        tokenOwner: createRecipientAddress(tokenOwner)
+        token_owner: createRecipientAddress(tokenOwner)
       });
     } else {
       tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
@@ -275,7 +275,7 @@ const DTOWrappedNFT = class extends CEP78 {
         token_hashes: CLValueBuilder.list(tokenIds),
         token_meta_datas: CLValueBuilder.list(metadatas),
         mint_id: CLValueBuilder.string(mintid),
-        tokenOwner: createRecipientAddress(tokenOwner)
+        token_owner: createRecipientAddress(tokenOwner)
       });
     }
 
@@ -319,7 +319,6 @@ const DTOWrappedNFT = class extends CEP78 {
       ttl = ttl ? ttl : DEFAULT_TTL;
     }
     let identifierMode = await this.identifierMode()
-   
     let runtimeArgs = {};
     if (identifierMode == 0) {
       tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
@@ -332,14 +331,13 @@ const DTOWrappedNFT = class extends CEP78 {
     } else {
       tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
       runtimeArgs = RuntimeArgs.fromMap({
-        token_hashes: tokenIds,
+        token_hashes: CLValueBuilder.list(tokenIds),
         to_chainid: CLValueBuilder.u256(toChainId),
         request_id: CLValueBuilder.string(genRanHex()),
         receiver_address: CLValueBuilder.string(receiverAddress)
       });
     }
 
-    console.log("sending");
     let trial = 5;
     while (true) {
       try {
@@ -360,7 +358,7 @@ const DTOWrappedNFT = class extends CEP78 {
         if (trial == 0) {
           throw e;
         }
-        console.log('waiting 2 seconds')
+        console.log('waiting 2 seconds ' + e)
         await sleep(3000)
       }
     }
