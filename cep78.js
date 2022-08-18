@@ -10,13 +10,32 @@ const { CLValueBuilder, RuntimeArgs } = require("casper-js-sdk");
 const { setClient, contractSimpleGetter, createRecipientAddress } = helpers;
 
 const CEP78 = class {
-    constructor(contractHash, nodeAddress, chainName) {
+    constructor(contractHash, nodeAddress, chainName, namedKeysList = []) {
         this.contractHash = contractHash.startsWith("hash-")
             ? contractHash.slice(5)
             : contractHash;
         this.nodeAddress = nodeAddress;
         this.chainName = chainName;
         this.contractClient = new CasperContractClient(nodeAddress, chainName);
+        this.namedKeysList = [
+            "balances",
+            "burnt_tokens",
+            "metadata_cep78",
+            "metadata_custom_validated",
+            "metadata_nft721",
+            "metadata_raw",
+            "operator",
+            "owned_tokens",
+            "token_issuers",
+            "token_owners",
+        ];
+        this.namedKeysList.push(...namedKeysList)
+    }
+
+    static async createInstance(contractHash, nodeAddress, chainName, namedKeysList = []) {
+        let wNFT = new CEP78(contractHash, nodeAddress, chainName, namedKeysList);
+        await wNFT.init();
+        return wNFT;
     }
 
     NFTMetadataKind = {
@@ -30,18 +49,7 @@ const CEP78 = class {
         const { contractPackageHash, namedKeys } = await setClient(
             this.nodeAddress,
             this.contractHash,
-            [
-                "balances",
-                "burnt_tokens",
-                "metadata_cep78",
-                "metadata_custom_validated",
-                "metadata_nft721",
-                "metadata_raw",
-                "operator",
-                "owned_tokens",
-                "token_issuers",
-                "token_owners",
-            ]
+            this.namedKeysList
         );
         this.contractPackageHash = contractPackageHash;
         this.contractClient.chainName = this.chainName

@@ -190,22 +190,23 @@ const NFTBridge = class {
 };
 
 const DTOWrappedNFT = class extends CEP78 {
-  constructor(contractHash, nodeAddress, chainName) {
-    super(contractHash, nodeAddress, chainName)
+  constructor(contractHash, nodeAddress, chainName, namedKeysList = []) {
+    super(contractHash, nodeAddress, chainName, namedKeysList)
   }
 
-  static async createInstance(contractHash, nodeAddress, chainName) {
-    let wNFT = new DTOWrappedNFT(contractHash, nodeAddress, chainName);
+  static async createInstance(contractHash, nodeAddress, chainName, namedKeysList = []) {
+    let wNFT = new DTOWrappedNFT(contractHash, nodeAddress, chainName, namedKeysList);
     await wNFT.init();
     return wNFT;
   }
 
   async init() {
     console.log("intializing", this.nodeAddress, this.contractHash);
+    this.namedKeysList.push("request_ids")
     const { contractPackageHash, namedKeys } = await setClient(
       this.nodeAddress,
       this.contractHash,
-      ["request_ids"]
+      this.namedKeysList
     );
     console.log("done");
     this.contractPackageHash = contractPackageHash;
@@ -366,4 +367,4 @@ const DTOWrappedNFT = class extends CEP78 {
   }
 };
 
-module.exports = { NFTBridge, genRanHex, DTOWrappedNFT };
+module.exports = { NFTBridge, genRanHex, DTOWrappedNFT, CEP78 };
