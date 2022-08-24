@@ -1,0 +1,72 @@
+{
+  "_accountHash": "account-hash-3bdcc50ce1e1e0119d4901b686c65c66b63cc17e5fa5da2299e332c545ec23c6",
+  "namedKeys": [
+    {
+      "name": "11111111111111111111111111111111111111111111111111111111",
+      "key": "uref-7f7b5393c8f8c81d3211f8b5198175a85eb5dfa5cd5bd94e3d40a807b4520b9f-007"
+    },
+    {
+      "name": "contract_owner",
+      "key": "account-hash-69b994ec6f871de00f099de1f7bcfca61bec1a1699d85ec50e7b883965bbc485"
+    },
+    {
+      "name": "contract_version",
+      "key": "uref-66309a5d46185fe01b592c64300c8278a9f1c9d3a88e8ffe2e120f56a58de71c-007"
+    },
+    {
+      "name": "dotoracle_nft_bridge_contract",
+      "key": "hash-cb01ba0662af1a822b28d6f998ece60091398c829b48313f46a05f1f8949cad8"
+    },
+    {
+      "name": "dotoracle_nft_bridge_contract_package_hash",
+      "key": "hash-0f111dfd9ce5ad1814113d094ce503c45f1b22df9e4c3665c22788b0abc81f69"
+    },
+    {
+      "name": "erc20_token_contract",
+      "key": "hash-46c08835a0dc98aaec72e68b330c4e699c26b7bde7b79ecf038b70502326aea5"
+    },
+    {
+      "name": "nft_contract",
+      "key": "hash-3d3964aaa7494bda2f62a9f67df9b091d1d7fe845dd8bfba1de00126569cec60"
+    },
+    {
+      "name": "nft_contract_package",
+      "key": "hash-e23b9106e46ffb15f98a3a95db86ff60058e3e0371f30078918058d55feefe70"
+    },
+    {
+      "name": "nft_contract_package_access",
+      "key": "uref-089a8c417c14078770bb03b82f5f9ba409ca16f4b599b0a556f61c03ee0758f6-007"
+    },
+    {
+      "name": "request_ids",
+      "key": "uref-7732f01fff8c1b032fbb920ef779460d8c55b5b65cacaabc6153f7c2b0c73dc7-007"
+    },
+    {
+      "name": "request_ids_1",
+      "key": "uref-9d0f28f397dd2d79308473bac938816c32ba52072d6e322f93ba6d3fac916b2a-007"
+    },
+    {
+      "name": "request_index",
+      "key": "uref-96d5debbd3f24013530cec1990cfeda1b426b68c07ee4550c7a9ac95b383ae97-007"
+    },
+    {
+      "name": "test_string_key",
+      "key": "uref-49305f27aff35e5777739f0073568923c10b597820ec4b6f6fdde3f4604d53a2-007"
+    },
+    {
+      "name": "unlock_ids",
+      "key": "uref-4f123314ecfbbb13cf02bb994ad3e8336b6334adec63de3ba48efac83e459cd6-007"
+    }
+  ],
+  "mainPurse": "uref-d7ee4c74c22c18405bc8cccdc6053012bf9884a2609b51016c110761f57fb50d-007",
+  "associatedKeys": [
+    {
+      "accountHash": "account-hash-3bdcc50ce1e1e0119d4901b686c65c66b63cc17e5fa5da2299e332c545ec23c6",
+      "weight": 1
+    }
+  ],
+  "actionThresholds": {
+    "deployment": 1,
+    "keyManagement": 1
+  }
+}
