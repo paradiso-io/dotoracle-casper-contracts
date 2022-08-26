@@ -6,6 +6,7 @@ use crate::constants::*;
 pub fn default(
     nft_bridge_contract_name: String,
     contract_owner: Key,
+    dev : Key,
     fee_token: Option<Key>,
 ) -> NamedKeys {
     let mut named_keys = NamedKeys::new();
@@ -18,6 +19,10 @@ pub fn default(
     named_keys.insert(
         CONTRACT_OWNER_KEY_NAME.to_string(),
         Key::from(storage::new_uref(contract_owner)),
+    );
+    named_keys.insert(
+        DEV.to_string(),
+        Key::from(storage::new_uref(dev)),
     );
     named_keys.insert(
         REQUEST_INDEX.to_string(),

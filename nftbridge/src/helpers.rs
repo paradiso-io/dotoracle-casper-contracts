@@ -103,6 +103,25 @@ fn call_stack_element_to_address(call_stack_element: CallStackElement) -> Addres
     }
 }
 
+pub(crate) fn get_verified_caller() -> Result<Key, Error> {
+    match *runtime::get_call_stack()
+        .iter()
+        .rev()
+        .nth_back(1)
+        .unwrap_or_revert()
+    {
+        CallStackElement::Session {
+            account_hash: calling_account_hash,
+        } => {
+            Ok(Key::Account(calling_account_hash))
+        }
+        CallStackElement::StoredSession { contract_hash, .. }
+        | CallStackElement::StoredContract { contract_hash, .. } => {
+            Ok(contract_hash.into())
+        }
+    }
+}
+
 /// Gets the immediate session caller of the current execution.
 ///
 /// This function ensures that only session code can execute this function, and disallows stored
@@ -117,6 +136,7 @@ pub(crate) fn get_immediate_caller_key() -> Key {
     let addr = get_immediate_caller_address().unwrap_or_revert();
     get_key_from_address(&addr)
 }
+
 
 #[no_mangle]
 pub(crate) fn dictionary_write(dictionary_uref: URef, address: Address, amount: U256) {
@@ -321,3 +341,5 @@ pub(crate) fn get_unlock_id_key(unlock_id: &str) -> String {
     let key_bytes = runtime::blake2b(unlock_id_bytes);
     hex::encode(&key_bytes)
 }
+
+

@@ -1,5 +1,5 @@
 require("dotenv").config();
-let contractInfo = require("./contractinfo.json");
+let contractInfo = require("./contractinfo2.json");
 const { CasperContractClient, helpers } = require("casper-js-client-helper");
 const { getDeploy } = require("./utils");
 const { createRecipientAddress } = helpers;
@@ -22,8 +22,10 @@ let nft_bridge_contract = contractInfo.namedKeys
   .key.slice(5);
 
 let nft_contract =
-  "805347b595cc24814f0d50482069a1dba24f9bfb2823c6e900386f147f25754b";
-let privateKeyBuffer = Keys.Ed25519.parsePrivateKey(
+  //"805347b595cc24814f0d50482069a1dba24f9bfb2823c6e900386f147f25754b";
+ //"52f370db3aeaa8c094e73a3aa581c85abc775cc52605e9cd9364cae0501ce645";
+ "44f244fb474431a20c4968d60550f790000d21785650c963f9ac5e02c126e1fb";
+ let privateKeyBuffer = Keys.Ed25519.parsePrivateKey(
   Keys.Ed25519.readBase64WithPEM(privateKeyPem)
 );
 let publicKey = Keys.Ed25519.privateToPublicKey(
@@ -38,11 +40,11 @@ const test = async () => {
   let bridge = await sdk.NFTBridge.createInstance(nft_bridge_contract, NODE_ADDRESS, CHAIN_NAME)
   let hash = await bridge.requestBridgeNFT({
     keys: KEYS,
-    tokenIds: [36],
+    tokenIds: ["9b4105806029ce18702f36c0747eadb5eab21862f08b679772927b340b586b6e"],
     nftContractHash: nft_contract, 
-    toChainId: 1,
-    identifierMode: 0,
-    receiverAddress: "0x00481E0dE32FecFF1C7ce3AF19cb03E01aFC0e48"
+    toChainId: 97,
+    identifierMode: 1,
+    receiverAddress: "0xe68485B880898B5C4Cde29d40A588846A5Ced582",
   })
 
   console.log(`... Contract installation deployHash: ${hash}`);

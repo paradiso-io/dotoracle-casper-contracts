@@ -23,6 +23,18 @@ fn request_bridge_nft() -> EntryPoint {
         EntryPointType::Contract,
     )
 }
+fn set_wrapped_token() -> EntryPoint {
+    EntryPoint::new(
+        String::from(SET_WRAPPED_TOKEN_ENTRY_POINT_NAME),
+        vec![
+            Parameter::new(ARG_WRAPPED_TOKEN, CLType::Key),
+            Parameter::new(ARG_IS_WRAPPED_TOKEN, CLType::Bool),
+        ],
+        CLType::String,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
 
 fn unlock_nft() -> EntryPoint {
     EntryPoint::new(
@@ -52,12 +64,20 @@ fn transfer_owner() -> EntryPoint {
     )
 }
 
+fn transfer_dev() -> EntryPoint {
+    EntryPoint::new(
+        String::from(TRANSFER_DEV_ENTRY_POINT_NAME),
+        vec![Parameter::new(ARG_NEW_DEV, CLType::Key)],
+        CLType::Key,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
+
 fn init() -> EntryPoint {
     EntryPoint::new(
         String::from(INIT_ENTRY_POINT_NAME),
-        vec![
-            Parameter::new(ARG_CONTRACT_HASH, CLType::Key)
-        ],
+        vec![Parameter::new(ARG_CONTRACT_HASH, CLType::Key)],
         CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -68,6 +88,8 @@ fn init() -> EntryPoint {
 pub(crate) fn default() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(request_bridge_nft());
+    entry_points.add_entry_point(set_wrapped_token());
+    entry_points.add_entry_point(transfer_dev());
     entry_points.add_entry_point(unlock_nft());
     entry_points.add_entry_point(transfer_owner());
     entry_points.add_entry_point(init());

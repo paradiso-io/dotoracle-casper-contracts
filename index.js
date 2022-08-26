@@ -115,10 +115,11 @@ const NFTBridge = class {
     identifierMode,
     paymentAmount,
     ttl,
-    receiverAddress
+    receiverAddress,
+    
   }) {
     if (!paymentAmount) {
-      paymentAmount = paymentAmount ? paymentAmount : "5000000000";
+      paymentAmount = paymentAmount ? paymentAmount : "3000000000";
       ttl = ttl ? ttl : DEFAULT_TTL;
     }
 
@@ -141,23 +142,26 @@ const NFTBridge = class {
     let runtimeArgs = {};
     if (identifierMode == 0) {
       tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
+      
       runtimeArgs = RuntimeArgs.fromMap({
         token_ids: CLValueBuilder.list(tokenIds),
         identifier_mode: CLValueBuilder.u8(identifierMode),
         nft_contract_hash: createRecipientAddress(nftContractHash),
         to_chainid: CLValueBuilder.u256(toChainId),
         request_id: CLValueBuilder.string(genRanHex()),
-        receiver_address: CLValueBuilder.string(receiverAddress)
-      });
+        receiver_address: CLValueBuilder.string(receiverAddress),
+      })
     } else {
+      console.log("TOkenIDS A: ",tokenIds)
       tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
+      console.log("TOkenIDS B: ",tokenIds)
       runtimeArgs = RuntimeArgs.fromMap({
-        token_hashes: tokenIds,
+        token_hashes: CLValueBuilder.list(tokenIds),
         identifier_mode: CLValueBuilder.u8(identifierMode),
         nft_contract_hash: createRecipientAddress(nftContractHash),
         to_chainid: CLValueBuilder.u256(toChainId),
         request_id: CLValueBuilder.string(genRanHex()),
-        receiver_address: CLValueBuilder.string(receiverAddress)
+        receiver_address: CLValueBuilder.string(receiverAddress),
       });
     }
 

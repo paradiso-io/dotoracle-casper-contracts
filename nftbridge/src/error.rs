@@ -22,7 +22,9 @@ pub enum Error {
     CallerMustBeAccountHash = 17,
     TooManyTokenIds = 18,
     UnlockIdIllFormatted = 19,
-    TxHashUnlockIdIllFormatted = 20
+    TxHashUnlockIdIllFormatted = 20,
+    InvalidDev = 100,
+    InvalidWrappedToken= 101,
 }
 
 impl From<Error> for ApiError {
