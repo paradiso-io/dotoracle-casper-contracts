@@ -19,7 +19,7 @@ const { createRecipientAddress } = helpers;
 
 
 const main = async () => {
-  
+
   //Step 1: Set casper node client
   const client = new CasperClient(NODE_ADDRESS);
   console.log(NODE_ADDRESS)

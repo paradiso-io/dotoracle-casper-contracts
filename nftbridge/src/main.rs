@@ -98,11 +98,8 @@ pub extern "C" fn request_bridge_nft() {
     let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
     let contract_hash_str: ContractHash = ContractHash::new(contract_hash_addr);
     // check as if token is wrapped token => revert
-    if get_dictionary_value_from_key::<String>(
-        WRAPPED_TOKEN,
-        &contract_hash_str.to_string(),
-    )
-    .is_some()
+    if get_dictionary_value_from_key::<String>(WRAPPED_TOKEN, &contract_hash_str.to_string())
+        .is_some()
     {
         runtime::revert(Error::InvalidWrappedToken);
     }
