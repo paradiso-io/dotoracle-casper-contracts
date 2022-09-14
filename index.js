@@ -10,6 +10,7 @@ const {
   CasperClient,
   CLByteArray,
   RuntimeArgs,
+  CLAccountHash,
 } = require("casper-js-sdk");
 const { DEFAULT_TTL } = require("casper-js-client-helper/dist/constants");
 
@@ -32,8 +33,8 @@ const getDeploy = async (NODE_URL, deployHash) => {
         // @ts-ignore
         throw Error(
           "Contract execution: " +
-            // @ts-ignore
-            raw.execution_results[0].result.Failure.error_message
+          // @ts-ignore
+          raw.execution_results[0].result.Failure.error_message
         );
       }
     } else {
@@ -116,7 +117,7 @@ const NFTBridge = class {
     paymentAmount,
     ttl,
     receiverAddress,
-    
+
   }) {
     if (!paymentAmount) {
       paymentAmount = paymentAmount ? paymentAmount : "3000000000";
@@ -142,7 +143,7 @@ const NFTBridge = class {
     let runtimeArgs = {};
     if (identifierMode == 0) {
       tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
-      
+
       runtimeArgs = RuntimeArgs.fromMap({
         token_ids: CLValueBuilder.list(tokenIds),
         identifier_mode: CLValueBuilder.u8(identifierMode),
@@ -152,9 +153,9 @@ const NFTBridge = class {
         receiver_address: CLValueBuilder.string(receiverAddress),
       })
     } else {
-      console.log("TOkenIDS A: ",tokenIds)
+      console.log("TOkenIDS A: ", tokenIds)
       tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
-      console.log("TOkenIDS B: ",tokenIds)
+      console.log("TOkenIDS B: ", tokenIds)
       runtimeArgs = RuntimeArgs.fromMap({
         token_hashes: CLValueBuilder.list(tokenIds),
         identifier_mode: CLValueBuilder.u8(identifierMode),
@@ -171,6 +172,96 @@ const NFTBridge = class {
       try {
         let hash = await this.contractClient.contractCall({
           entryPoint: "request_bridge_nft",
+          keys: keys,
+          paymentAmount,
+          runtimeArgs,
+          cb: (deployHash) => {
+            console.log("deployHash", deployHash);
+          },
+          ttl,
+        });
+
+        return hash;
+      } catch (e) {
+        trial--
+        if (trial == 0) {
+          throw e;
+        }
+        console.log('waiting 2 seconds')
+        await sleep(3000)
+      }
+    }
+  }
+
+  async unlockNFT({
+    keys,
+    tokenIds,
+    nftContractHash,
+    fromChainId,
+    identifierMode,
+    paymentAmount,
+    ttl,
+    receiverAddress,
+
+  }) {
+    if (!paymentAmount) {
+      paymentAmount = paymentAmount ? paymentAmount : "3000000000";
+      ttl = ttl ? ttl : DEFAULT_TTL;
+    }
+
+    if (identifierMode == undefined) {
+      let nftContract = new CEP78(
+        nftContractHash,
+        this.nodeAddress,
+        this.chainName
+      );
+      await nftContract.init();
+      identifierMode = await nftContract.identifierMode();
+    }
+    nftContractHash = nftContractHash.startsWith("hash-")
+      ? nftContractHash.slice(5)
+      : nftContractHash;
+    console.log("nftContractHash", nftContractHash);
+    nftContractHash = new CLByteArray(
+      Uint8Array.from(Buffer.from(nftContractHash, "hex"))
+    );
+    let ownerAccountHashByte = new CLAccountHash(Uint8Array.from(
+      Buffer.from(receiverAddress, 'hex'),
+    ))
+
+
+    let runtimeArgs = {};
+    if (identifierMode == 0) {
+      tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
+
+      runtimeArgs = RuntimeArgs.fromMap({
+        token_ids: CLValueBuilder.list(tokenIds),
+        identifier_mode: CLValueBuilder.u8(identifierMode),
+        nft_contract_hash: createRecipientAddress(nftContractHash),
+        from_chainid: CLValueBuilder.u256(fromChainId),
+        request_id: CLValueBuilder.string(genRanHex()),
+        receiver_address: createRecipientAddress(ownerAccountHashByte),
+      })
+    } else {
+      console.log("TOkenIDS A: ", tokenIds)
+      tokenIds = tokenIds.map((e) => CLValueBuilder.string(e));
+      console.log("TOkenIDS B: ", tokenIds)
+      runtimeArgs = RuntimeArgs.fromMap({
+        token_hashes: CLValueBuilder.list(tokenIds),
+        identifier_mode: CLValueBuilder.u8(identifierMode),
+        nft_contract_hash: createRecipientAddress(nftContractHash),
+        from_chainid: CLValueBuilder.u256(fromChainId),
+        request_id: CLValueBuilder.string(genRanHex()),
+        receiver_address: createRecipientAddress(ownerAccountHashByte),
+      });
+    }
+
+    console.log("sending");
+    let trial = 5;
+    while (true) {
+      try {
+        let hash = await this.contractClient.contractCall({
+          entryPoint: "unlock_nft",
           keys: keys,
           paymentAmount,
           runtimeArgs,
@@ -262,7 +353,7 @@ const DTOWrappedNFT = class extends CEP78 {
       ttl = ttl ? ttl : DEFAULT_TTL;
     }
     let identifierMode = await this.identifierMode()
-   
+
     let runtimeArgs = {};
     metadatas = metadatas.map(e => CLValueBuilder.string(e))
     if (identifierMode == 0) {
