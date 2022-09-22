@@ -23,8 +23,11 @@ pub enum Error {
     TooManyTokenIds = 18,
     UnlockIdIllFormatted = 19,
     TxHashUnlockIdIllFormatted = 20,
-    InvalidDev = 100,
+    InvalidDev = 100, 
     InvalidWrappedToken= 101,
+    MissingContractOwner = 102,
+    MissingDev = 103,
+    
 }
 
 impl From<Error> for ApiError {

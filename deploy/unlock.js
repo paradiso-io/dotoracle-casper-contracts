@@ -40,11 +40,11 @@ const test = async () => {
   let bridge = await sdk.NFTBridge.createInstance(nft_bridge_contract, NODE_ADDRESS, CHAIN_NAME)
   let hash = await bridge.unlockNFT({
     keys: KEYS,
-    tokenIds: [2],
+    tokenIds: [6],
     nftContractHash: nft_contract, 
     fromChainId: 43113,
     identifierMode: 0,
-    receiverAddress: "017e80955a6d493a4a4b9f1b5dd23d2edcdc2c8b00fcd9689f2f735f501bd088c5",
+    receiverAddress: "55884917f4107a59e8c06557baee7fdada631af6d1c105984d196a84562854eb",
   })
 
   console.log(`... Contract installation deployHash: ${hash}`);

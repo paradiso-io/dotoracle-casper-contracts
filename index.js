@@ -7,10 +7,12 @@ const {
 const CEP78 = require("./cep78");
 const {
   CLValueBuilder,
+  CLKey,
   CasperClient,
   CLByteArray,
   RuntimeArgs,
   CLAccountHash,
+  DeployUtil,
 } = require("casper-js-sdk");
 const { DEFAULT_TTL } = require("casper-js-client-helper/dist/constants");
 
@@ -63,6 +65,7 @@ const NFTBridge = class {
   static async createInstance(contractHash, nodeAddress, chainName) {
     let bridge = new NFTBridge(contractHash, nodeAddress, chainName);
     await bridge.init();
+    console.log("NameKey: ", bridge.namedKeys)
     return bridge;
   }
 
@@ -225,22 +228,38 @@ const NFTBridge = class {
     nftContractHash = new CLByteArray(
       Uint8Array.from(Buffer.from(nftContractHash, "hex"))
     );
-    let ownerAccountHashByte = new CLAccountHash(Uint8Array.from(
+    // let ownerAccountHashByte = new CLAccountHash(Uint8Array.from(
+    //   Buffer.from(receiverAddress, 'hex'),
+    // ))
+    // let ownerAccountHashByte = Uint8Array.from(
+    //   Buffer.from(receiverAddress, 'hex'),
+    // )
+    // const receiverAccounthash = new CLAccountHash(
+    //   ownerAccountHashByte
+    // );
+    // const receiverKey = new CLKey(receiverAccounthash);
+    // console.log("token_owner_to_casper:  ", receiverKey)
+    let recipientAccountHashByte = Uint8Array.from(
       Buffer.from(receiverAddress, 'hex'),
-    ))
+    )
+    const accounthash2 = new CLAccountHash(
+      recipientAccountHashByte
+    );
+    const token_owner_to_casper = new CLKey(accounthash2);
+    console.log("token_owner_to_casper:  ", token_owner_to_casper)
+
 
 
     let runtimeArgs = {};
     if (identifierMode == 0) {
       tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
-
       runtimeArgs = RuntimeArgs.fromMap({
-        token_ids: CLValueBuilder.list(tokenIds),
+        token_ids: CLValueBuilder.list([CLValueBuilder.u64(5)]), //tokenIds
         identifier_mode: CLValueBuilder.u8(identifierMode),
+        receiver_address: token_owner_to_casper,
         nft_contract_hash: createRecipientAddress(nftContractHash),
         from_chainid: CLValueBuilder.u256(fromChainId),
-        request_id: CLValueBuilder.string(genRanHex()),
-        receiver_address: createRecipientAddress(ownerAccountHashByte),
+         
       })
     } else {
       console.log("TOkenIDS A: ", tokenIds)
@@ -251,8 +270,7 @@ const NFTBridge = class {
         identifier_mode: CLValueBuilder.u8(identifierMode),
         nft_contract_hash: createRecipientAddress(nftContractHash),
         from_chainid: CLValueBuilder.u256(fromChainId),
-        request_id: CLValueBuilder.string(genRanHex()),
-        receiver_address: createRecipientAddress(ownerAccountHashByte),
+        // receiver_address: createRecipientAddress(ownerAccountHashByte),
       });
     }
 
@@ -270,6 +288,25 @@ const NFTBridge = class {
           },
           ttl,
         });
+        //   let deploy = await DeployUtil.makeDeploy(
+        //     new DeployUtil.DeployParams(
+        //       keys.publicKey,
+        //         "casper-test"
+        //     ),
+        //     DeployUtil.ExecutableDeployItem.newStoredContractByHash(
+        //         Uint8Array.from(Buffer.from("0776a9154e189c84ac947e128ac155e12f92853fc581148bb2ac90c2466f6285", "hex")),
+        //         "unlock_nft",
+        //         runtimeArgs,
+        //     ),
+        //     DeployUtil.standardPayment(2000000000)
+        // );
+
+        // console.log("Deploy: ", deploy)
+        // const client = new CasperClient(this.nodeAddress)
+        // deploy = await client.signDeploy(deploy, keys);
+
+        // let deployHash = await client.putDeploy(deploy);
+        // console.log("deployHash: ", deployHash)
 
         return hash;
       } catch (e) {

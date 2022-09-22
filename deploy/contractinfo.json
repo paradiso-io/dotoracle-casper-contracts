@@ -7,7 +7,7 @@
     },
     {
       "name": "contract_owner",
-      "key": "account-hash-55884917f4107a59e8c06557baee7fdada631af6d1c105984d196a84562854eb"
+      "key": "account-hash-69b994ec6f871de00f099de1f7bcfca61bec1a1699d85ec50e7b883965bbc485"
     },
     {
       "name": "contract_version",
@@ -19,11 +19,11 @@
     },
     {
       "name": "dotoracle_nft_bridge_contract",
-      "key": "hash-44f244fb474431a20c4968d60550f790000d21785650c963f9ac5e02c126e1fb"
+      "key": "hash-5db43d7bda61a954f4a73d51de9ee3a1c1a58d2b9cf895e1b98c6d3f73ee38e9"
     },
     {
       "name": "dotoracle_nft_bridge_contract_package_hash",
-      "key": "hash-b3308abc9565b2b7c320ad179068615852650f4c63070b9116ec2cd502587af7"
+      "key": "hash-9b320972294f954e41bcd6ae018373e6f1576dc8065a119b52a32f8f6facbbcf"
     },
     {
       "name": "minting_contract_access_uref",

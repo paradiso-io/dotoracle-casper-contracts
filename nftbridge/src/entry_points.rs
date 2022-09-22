@@ -48,7 +48,7 @@ fn unlock_nft() -> EntryPoint {
             Parameter::new(ARG_TARGET_KEY, CLType::Key),
             Parameter::new(ARG_UNLOCK_ID, String::cl_type()),
         ],
-        CLType::Unit,
+        CLType::String,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     )

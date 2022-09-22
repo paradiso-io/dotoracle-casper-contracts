@@ -23,6 +23,7 @@ use casper_types::{system::CallStackElement, URef, U256};
 use core::convert::TryFrom;
 use core::convert::TryInto;
 use core::u64;
+use core::{ mem::MaybeUninit};
 
 use crate::constants::*;
 
@@ -103,10 +104,10 @@ fn call_stack_element_to_address(call_stack_element: CallStackElement) -> Addres
     }
 }
 
+
 pub(crate) fn get_verified_caller() -> Result<Key, Error> {
     match *runtime::get_call_stack()
         .iter()
-        .rev()
         .nth_back(1)
         .unwrap_or_revert()
     {
@@ -120,6 +121,65 @@ pub(crate) fn get_verified_caller() -> Result<Key, Error> {
             Ok(contract_hash.into())
         }
     }
+}
+
+pub(crate) fn get_stored_value_with_user_errors<T: CLTyped + FromBytes>(
+    name: &str,
+    missing: Error,
+    invalid: Error,
+) -> T {
+    let uref = get_uref(name);
+    read_with_user_errors(uref, missing, invalid)
+}
+pub(crate) fn read_with_user_errors<T: CLTyped + FromBytes>(
+    uref: URef,
+    missing: Error,
+    invalid: Error,
+) -> T {
+    let key: Key = uref.into();
+    let (key_ptr, key_size, _bytes) = to_ptr(key);
+
+    let value_size = {
+        let mut value_size = MaybeUninit::uninit();
+        let ret = unsafe { ext_ffi::casper_read_value(key_ptr, key_size, value_size.as_mut_ptr()) };
+        match api_error::result_from(ret) {
+            Ok(_) => unsafe { value_size.assume_init() },
+            Err(ApiError::ValueNotFound) => runtime::revert(missing),
+            Err(e) => runtime::revert(e),
+        }
+    };
+
+    let value_bytes = read_host_buffer(value_size).unwrap_or_revert();
+
+    bytesrepr::deserialize(value_bytes).unwrap_or_revert_with(invalid)
+}
+
+pub(crate) fn to_ptr<T: ToBytes>(t: T) -> (*const u8, usize, Vec<u8>) {
+    let bytes = t.into_bytes().unwrap_or_revert();
+    let ptr = bytes.as_ptr();
+    let size = bytes.len();
+    (ptr, size, bytes)
+}
+pub(crate) fn read_host_buffer(size: usize) -> Result<Vec<u8>, ApiError> {
+    let mut dest: Vec<u8> = if size == 0 {
+        Vec::new()
+    } else {
+        let bytes_non_null_ptr = contract_api::alloc_bytes(size);
+        unsafe { Vec::from_raw_parts(bytes_non_null_ptr.as_ptr(), size, size) }
+    };
+    read_host_buffer_into(&mut dest)?;
+    Ok(dest)
+}
+pub(crate) fn read_host_buffer_into(dest: &mut [u8]) -> Result<usize, ApiError> {
+    let mut bytes_written = MaybeUninit::uninit();
+    let ret = unsafe {
+        ext_ffi::casper_read_host_buffer(dest.as_mut_ptr(), dest.len(), bytes_written.as_mut_ptr())
+    };
+    // NOTE: When rewriting below expression as `result_from(ret).map(|_| unsafe { ... })`, and the
+    // caller ignores the return value, execution of the contract becomes unstable and ultimately
+    // leads to `Unreachable` error.
+    api_error::result_from(ret)?;
+    Ok(unsafe { bytes_written.assume_init() })
 }
 
 /// Gets the immediate session caller of the current execution.

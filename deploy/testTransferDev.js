@@ -90,10 +90,9 @@ ${key}
     ),
     DeployUtil.ExecutableDeployItem.newStoredContractByHash(
       Uint8Array.from(Buffer.from(hash1, 'hex')), // DTO CASPER BRIDGE contract
-      "set_wrapped_token",
+      "transfer_dev",
       RuntimeArgs.fromMap({
-        "wrapped_token": contracthash, // token address
-        "is_wrapped_token": is_wrapped_token,
+        "new_dev": token_owner, // token address
       })
     ),
     // DeployUtil.ExecutableDeployItem.newStoredContractByHash(

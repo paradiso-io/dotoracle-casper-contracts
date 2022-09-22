@@ -182,9 +182,16 @@ pub extern "C" fn request_bridge_nft() {
 pub extern "C" fn set_wrapped_token() -> Result<(), Error> {
     let wrapped_token: Key = runtime::get_named_arg(ARG_WRAPPED_TOKEN);
     let is_wrapped_token: bool = runtime::get_named_arg(ARG_IS_WRAPPED_TOKEN);
-    let dev = runtime::get_key(DEV).unwrap_or_revert();
+    // let dev = runtime::get_key(DEV).unwrap_or_revert();
+    // let caller = helpers::get_verified_caller().unwrap_or_revert();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
-    if caller != dev {
+    let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
+        DEV,
+        Error::MissingDev,
+        Error::InvalidDev,
+    );
+
+    if caller != current_dev {
         runtime::revert(Error::InvalidDev);
     }
     write_dictionary_value_from_key(
@@ -198,8 +205,15 @@ pub extern "C" fn set_wrapped_token() -> Result<(), Error> {
 #[no_mangle]
 pub extern "C" fn transfer_owner() -> Result<(), Error> {
     let new_contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
-    let current_contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap_or_revert();
+    // let current_contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap_or_revert();
+    // let caller = helpers::get_verified_caller().unwrap_or_revert();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
+    let current_contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_OWNER_KEY_NAME,
+        Error::MissingContractOwner,
+        Error::InvalidContractOwner,
+    );
+
     if caller != current_contract_owner {
         runtime::revert(Error::InvalidContractOwner);
     }
@@ -210,8 +224,15 @@ pub extern "C" fn transfer_owner() -> Result<(), Error> {
 #[no_mangle]
 pub extern "C" fn transfer_dev() -> Result<(), Error> {
     let new_dev: Key = runtime::get_named_arg(ARG_NEW_DEV);
-    let current_dev = runtime::get_key(DEV).unwrap_or_revert();
-    let caller = get_immediate_caller_key();
+    //let current_dev = runtime::get_key(DEV).unwrap_or_revert();
+    //let caller = get_immediate_caller_key();
+    let caller = helpers::get_verified_caller().unwrap_or_revert();
+    let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
+        DEV,
+        Error::MissingDev,
+        Error::InvalidDev,
+    );
+
     if caller != current_dev {
         runtime::revert(Error::InvalidDev);
     }
@@ -221,8 +242,14 @@ pub extern "C" fn transfer_dev() -> Result<(), Error> {
 
 #[no_mangle]
 pub extern "C" fn unlock_nft() -> Result<(), Error> {
-    let caller = get_immediate_caller_key();
-    let contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap();
+    //let caller = get_immediate_caller_key();
+    //let contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap();
+    let caller = helpers::get_verified_caller().unwrap_or_revert();
+    let contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_OWNER_KEY_NAME,
+        Error::MissingContractOwner,
+        Error::InvalidContractOwner,
+    );
     if caller != contract_owner {
         runtime::revert(Error::InvalidAccount);
     }

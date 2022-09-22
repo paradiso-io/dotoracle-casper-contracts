@@ -5,7 +5,7 @@ const { sleep, getDeploy } = require("./utils");
 const { createRecipientAddress } = helpers;
 let key = require('./keys.json').key
 
-const { CLValueBuilder, Keys, RuntimeArgs, CLByteArrayBytesParser, CLByteArray } = require("casper-js-sdk");
+const { CLValueBuilder, CLPublicKey, Keys, RuntimeArgs, CLByteArrayBytesParser, CLByteArray } = require("casper-js-sdk");
 
 const { NODE_ADDRESS, EVENT_STREAM_ADDRESS, CHAIN_NAME, WASM_PATH } =
   process.env;
@@ -40,10 +40,10 @@ const test = async () => {
   let nftContractHash = new CLByteArray(Uint8Array.from(Buffer.from(nft_contract, "hex")))
   console.log('nftContractHash', nftContractHash.clType().toString())
   const runtimeArgs = RuntimeArgs.fromMap({
-    token_ids: CLValueBuilder.list([CLValueBuilder.u64(36)]),
+    token_ids: CLValueBuilder.list([CLValueBuilder.u64(2)]),
     identifier_mode: CLValueBuilder.u8(0),
     nft_contract_hash: createRecipientAddress(nftContractHash),
-    from_chainid: CLValueBuilder.u256(1234),
+    from_chainid: CLValueBuilder.u256(43113),
     target_key: createRecipientAddress(KEYS.publicKey)
   });
 
@@ -66,7 +66,7 @@ const test = async () => {
 
   console.log(`... Contract installation deployHash: ${hash}`);
 
-  await getDeploy(NODE_ADDRESS, hash);
+  //await getDeploy(NODE_ADDRESS, hash);
 
   console.log(`... Contract installed successfully.`);
 };
