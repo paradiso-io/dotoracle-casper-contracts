@@ -27,6 +27,8 @@ pub enum Error {
     InvalidWrappedToken= 101,
     MissingContractOwner = 102,
     MissingDev = 103,
+    MissingBridgeContractHash = 104,
+    InvalidBridgeContractHash = 105,
     
 }
 

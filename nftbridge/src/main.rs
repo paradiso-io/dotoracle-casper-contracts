@@ -27,10 +27,13 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs, U256,
+    bytesrepr, bytesrepr::FromBytes, bytesrepr::ToBytes, contracts::NamedKeys, runtime_args,
+    ContractHash, HashAddr, Key, RuntimeArgs, U256,
 };
+use casper_types_derive::{CLTyped, FromBytes, ToBytes};
+
 use helpers::{get_immediate_caller_key, get_self_key};
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, ToBytes, FromBytes)]
 pub(crate) struct RequestBridge {
     nft_contract_hash: Key,
     identifier_mode: u8,
@@ -66,13 +69,19 @@ fn call() {
 
     let named_keys: NamedKeys = named_keys::default(contract_name, contract_owner, dev, None);
 
-    // We store contract on-chain
-    let (contract_hash, _version) = storage::new_locked_contract(
-        entry_points::default(),
-        Some(named_keys),
-        Some(String::from(contract_package_hash_key_name)),
-        None,
-    );
+    let (contract_package_hash, _access_uref) = storage::create_contract_package_at_hash();
+
+    // // We store contract on-chain
+    // let (contract_hash, _version) = storage::new_locked_contract(
+    //     entry_points::default(),
+    //     Some(named_keys),
+    //     Some(String::from(contract_package_hash_key_name)),
+    //     None,
+    // );
+    let (contract_hash, _version) =
+        storage::add_contract_version(contract_package_hash, entry_points::default(), named_keys);
+    runtime::put_key("bridge_nft_pk", Key::from(contract_package_hash));
+    runtime::put_key("bridge_nft_pk_access", Key::from(_access_uref));
 
     //{
     // let test_string = "test_string_haha_123-456";
@@ -95,13 +104,19 @@ fn call() {
 pub extern "C" fn request_bridge_nft() {
     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH); //Contract hash of NFT request bridge
 
-    let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
-    let contract_hash_str: ContractHash = ContractHash::new(contract_hash_addr);
+    // let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
+    // let contract_hash_str: ContractHash = ContractHash::new(contract_hash_addr);
+    let contract_hash_dictionary_key: String = make_dictionary_item_key_for_contract(contract_hash);
     // check as if token is wrapped token => revert
-    if get_dictionary_value_from_key::<String>(WRAPPED_TOKEN, &contract_hash_str.to_string())
-        .is_some()
+    if get_dictionary_value_from_key::<bool>(WRAPPED_TOKEN, &contract_hash_dictionary_key).is_some()
     {
-        runtime::revert(Error::InvalidWrappedToken);
+        let is_wrapped_token_value =
+            get_dictionary_value_from_key::<bool>(WRAPPED_TOKEN, &contract_hash_dictionary_key)
+                .unwrap_or_revert();
+
+        if is_wrapped_token_value == true {
+            runtime::revert(Error::InvalidWrappedToken);
+        }
     }
     let identifier_mode = get_identifier_mode_from_runtime_args();
     let user = get_immediate_caller_key();
@@ -109,7 +124,14 @@ pub extern "C" fn request_bridge_nft() {
         runtime::revert(Error::CallerMustBeAccountHash);
     }
 
-    let self_key = get_self_key();
+    // Transfer nft to this bridge contract hash - NOT the bridge contract package hash
+    // let self_key = get_self_key();
+    let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_HASH_KEY_NAME,
+        Error::MissingBridgeContractHash,
+        Error::InvalidBridgeContractHash,
+    );
+
     let request_id: String = runtime::get_named_arg(ARG_REQUEST_ID);
     if request_id.chars().count() != 64 {
         runtime::revert(Error::RequestIdIlledFormat);
@@ -168,10 +190,11 @@ pub extern "C" fn request_bridge_nft() {
 
     set_key(REQUEST_INDEX, current_request_index);
 
+    // Transfer NFT to the bridge contract_hash (NOT the bridge contract_package_hash)
     cep78_transfer_from(
         &contract_hash,
         user,
-        self_key,
+        this_bridge_contract_hash,
         identifier_mode,
         token_identifiers,
     );
@@ -194,9 +217,12 @@ pub extern "C" fn set_wrapped_token() -> Result<(), Error> {
     if caller != current_dev {
         runtime::revert(Error::InvalidDev);
     }
+
+    let wrapped_token_dictionary_key: String = make_dictionary_item_key_for_contract(wrapped_token);
+
     write_dictionary_value_from_key(
         WRAPPED_TOKEN,
-        &wrapped_token.to_formatted_string(),
+        &wrapped_token_dictionary_key,
         is_wrapped_token,
     );
     Ok(())
@@ -241,7 +267,7 @@ pub extern "C" fn transfer_dev() -> Result<(), Error> {
 }
 
 #[no_mangle]
-pub extern "C" fn unlock_nft() -> Result<(), Error> {
+pub extern "C" fn unlock_nft() {
     //let caller = get_immediate_caller_key();
     //let contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
@@ -292,15 +318,21 @@ pub extern "C" fn unlock_nft() -> Result<(), Error> {
         runtime::revert(Error::TooManyTokenIds);
     }
     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
-    let self_key = get_self_key();
+
+    // let self_key = get_self_key();
+    let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_HASH_KEY_NAME,
+        Error::MissingBridgeContractHash,
+        Error::InvalidBridgeContractHash,
+    );
+
     cep78_transfer_from(
         &contract_hash,
-        self_key,
+        this_bridge_contract_hash,
         target,
         identifier_mode,
         token_identifiers,
     );
-    Ok(())
 }
 
 fn cep78_transfer_from(

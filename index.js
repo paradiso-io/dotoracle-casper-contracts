@@ -4,7 +4,7 @@ const {
   CasperContractClient,
 } = require("casper-js-client-helper");
 
-const CEP78 = require("./cep78");
+const CEP78 = require("./cep78V111");
 const {
   CLValueBuilder,
   CLKey,
@@ -123,7 +123,7 @@ const NFTBridge = class {
 
   }) {
     if (!paymentAmount) {
-      paymentAmount = paymentAmount ? paymentAmount : "3000000000";
+      paymentAmount = paymentAmount ? paymentAmount : "100000000000";
       ttl = ttl ? ttl : DEFAULT_TTL;
     }
 

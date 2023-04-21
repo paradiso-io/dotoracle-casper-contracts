@@ -217,6 +217,18 @@ fn make_dictionary_item_key(owner: Address) -> String {
     base64::encode(&preimage)
 }
 
+pub (crate) fn make_dictionary_item_key_for_contract(contract_hash: Key) -> String {
+    let pre_contract = contract_hash.into_hash().unwrap_or_revert();
+    // NOTE: As for now dictionary item keys are limited to 64 characters only. Instead of using
+    // hashing (which will effectively hash a hash) we'll use base64. Preimage is about 33 bytes for
+    // both Address variants, and approximated base64-encoded length will be 4 * (33 / 3) ~ 44
+    // characters.
+    // Even if the preimage increased in size we still have extra space but even in case of much
+    // larger preimage we can switch to base85 which has ratio of 4:5.
+    hex::encode(&pre_contract)
+}
+
+
 #[no_mangle]
 pub(crate) fn dictionary_read(dictionary_uref: URef, address: Address) -> U256 {
     let dictionary_item_key = make_dictionary_item_key(address);

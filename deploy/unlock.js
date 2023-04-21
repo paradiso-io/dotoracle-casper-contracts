@@ -17,12 +17,10 @@ ${key}
 -----END PRIVATE KEY-----
 `; // abb key
 
-let nft_bridge_contract = contractInfo.namedKeys
-  .filter((e) => e.name == "dotoracle_nft_bridge_contract")[0]
-  .key.slice(5);
+let nft_bridge_contract = "dc4d6de2bfbfaf5b422bfc32fb154da122f5d6374e1919ddfc6a1cc38fc7323b"
 
 let nft_contract =
-  "805347b595cc24814f0d50482069a1dba24f9bfb2823c6e900386f147f25754b";
+  "a198be397f8d07f184ec0cf1b5a23e28e713d59ff2bd2f6c25d98f66883d61af";
  //"52f370db3aeaa8c094e73a3aa581c85abc775cc52605e9cd9364cae0501ce645";
  //"44f244fb474431a20c4968d60550f790000d21785650c963f9ac5e02c126e1fb";
  let privateKeyBuffer = Keys.Ed25519.parsePrivateKey(
@@ -40,7 +38,7 @@ const test = async () => {
   let bridge = await sdk.NFTBridge.createInstance(nft_bridge_contract, NODE_ADDRESS, CHAIN_NAME)
   let hash = await bridge.unlockNFT({
     keys: KEYS,
-    tokenIds: [6],
+    tokenIds: [0],
     nftContractHash: nft_contract, 
     fromChainId: 43113,
     identifierMode: 0,

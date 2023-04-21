@@ -2,8 +2,160 @@
   "_accountHash": "account-hash-55884917f4107a59e8c06557baee7fdada631af6d1c105984d196a84562854eb",
   "namedKeys": [
     {
+      "name": "Fat Panda DEX",
+      "key": "hash-4f2c3f858f35b4c4e514825511c5d8852457b850b4a0ea889405ff3ddb9e1a89"
+    },
+    {
+      "name": "Fat Panda DEX_contract_hash",
+      "key": "hash-084bded9a2f132f0b963eeb010d48e9b3806ce51bfb3b588bd69dfb571555635"
+    },
+    {
+      "name": "Fat Panda DEX_package_access_token",
+      "key": "uref-b4abcbcebe8f0f34469e5ed8563c040f8092579ae349fcf6438476b82851ac7f-007"
+    },
+    {
+      "name": "Fat Panda DEX_package_hash",
+      "key": "hash-3f0ff0558adca5bcac3510f7ef49e225a27dd33c73377bfbd9a29e8276bf02b0"
+    },
+    {
+      "name": "Fat Panda DEX_package_name",
+      "key": "hash-2b1d0fdcf6cdf1447e418ef53206c70036959551ca0bf526a5bb06d3906bf1b9"
+    },
+    {
+      "name": "MK_APOC",
+      "key": "hash-f3d5a2df0f4f235d5bf5a2ba6c673bda5b6fbfe0511a8ce9ffee84eb13401a98"
+    },
+    {
+      "name": "MK_GEN0_BIDDING",
+      "key": "hash-b3b7338cb9956780d48dafbdbe56c17341b1892007a6d03644f3745013d2f4e6"
+    },
+    {
+      "name": "MK_GEN0_CSP",
+      "key": "hash-e4257c89be484df1638658941fdd54664bca2e4303f6424d6f50074b2d129747"
+    },
+    {
+      "name": "MK_GEN0_REVOKEBID",
+      "key": "hash-60ee09409a819abc8a12be554d9c2b3061ea246349b43576387eedc5bd71a2ea"
+    },
+    {
+      "name": "MK_GEN0_TESTNET",
+      "key": "hash-6f2dfa647101d3a08021116afc018d83376b6c2e9c7af59422480c978bf942b6"
+    },
+    {
+      "name": "Wrapped Casper",
+      "key": "hash-d2e3138640521f0b227bd45b55503a4261f577e1f5b1f0095b54f67377715448"
+    },
+    {
+      "name": "Wrapped Casper_access_token",
+      "key": "uref-5d05d3cb141df9bea5a446d20e2ce917b5d6794a6eb4f9e61e099038ff091917-007"
+    },
+    {
+      "name": "Wrapped Casper_hash",
+      "key": "uref-f948c47dd0c1737a3e23b85c13de8cc8c33fef83226f0bef1001a399c9f7e9b2-007"
+    },
+    {
+      "name": "Wrapped Casper_package_hash",
+      "key": "hash-9dce8a3ce02a591d1dfaf0ed63efd859d2c8c23e0fd7f1a9b53937423b6fb595"
+    },
+    {
       "name": "balance_of",
       "key": "uref-c326ea288d7704fb951a6de408adb451c89645580fdfa2b39399de9a5f84651e-007"
+    },
+    {
+      "name": "bridge_contract_hash",
+      "key": "hash-0041b3ddf456c91ace82903b2ce98ed6e3e4df9c13611f4e3cb792f1660a0c50"
+    },
+    {
+      "name": "casper_punk_contract",
+      "key": "hash-0125e224d28b576c4ae0b30c4e2f1bd30f93629994b60087ddcc287cdbd78349"
+    },
+    {
+      "name": "casperpunk_contract_package",
+      "key": "hash-814f1eb5051d429318752bb76d3a83c612c8c20cb3e1455716f04bea1ab0defa"
+    },
+    {
+      "name": "casperpunk_contract_package_access",
+      "key": "uref-0e488b2c468c1b686d04410523d8a5dc6bfe7cd776883efbd76a21c1b9178534-007"
+    },
+    {
+      "name": "cep78_contract_hash_AFT Faucet",
+      "key": "hash-aeb9f1877ce978c73fa099c82c9ebd65af183a922c3f6588675dd5e640ea03a8"
+    },
+    {
+      "name": "cep78_contract_hash_Bridge Faucet",
+      "key": "hash-f7938b26185485dbef6ef2061d537d9c76c4693e38f2ad10e52b556812f1cc4b"
+    },
+    {
+      "name": "cep78_contract_hash_Cep78 Faucet",
+      "key": "hash-3a100016a814263b64223357b169ac94ff84d1fd5826efaf1935543287066fc1"
+    },
+    {
+      "name": "cep78_contract_hash_GFT Faucet",
+      "key": "hash-7d9297db2765629dce080dfa2c63d0b54f06049c33e4e6a9efadbb2f83120ef0"
+    },
+    {
+      "name": "cep78_contract_hash_Wrap NFT721",
+      "key": "hash-f8d0525827280b196581e3cfe3b42c1d8c09e1499f6b035e637913c978b3a6fb"
+    },
+    {
+      "name": "cep78_contract_package_AFT Faucet",
+      "key": "hash-3bfc2e55584a16101872f26d766fb5ad183dae187df7a30d824036abe54836cc"
+    },
+    {
+      "name": "cep78_contract_package_Bridge Faucet",
+      "key": "hash-8a6920534985dda707fcb290b294cc04a7c500a7458077bffabd3c934cb709a0"
+    },
+    {
+      "name": "cep78_contract_package_Cep78 Faucet",
+      "key": "hash-efe6c78ee5b585da7105e037855c5f6b26e88da7782c002595fe952b4294baac"
+    },
+    {
+      "name": "cep78_contract_package_GFT Faucet",
+      "key": "hash-d301eaab9c51168c5a52912cf4c304abc2a3808eaac498de24ce1b6fc95f03af"
+    },
+    {
+      "name": "cep78_contract_package_Wrap NFT721",
+      "key": "hash-248691019b74744b5298612ec7d3ef760d1620ac192942192b6fb9eb876307b6"
+    },
+    {
+      "name": "cep78_contract_package_access_AFT Faucet",
+      "key": "uref-2edb552b5765ab60e249775cbfa8fd62c198d9fcb155c75f424c9911f23f0fb5-007"
+    },
+    {
+      "name": "cep78_contract_package_access_Bridge Faucet",
+      "key": "uref-532c1599909afed307759431d0e433b82bbae44d9b9661bb8e0005433ee48402-007"
+    },
+    {
+      "name": "cep78_contract_package_access_Cep78 Faucet",
+      "key": "uref-f54534156e4bda57175abb098c30b6415255dfa47a9af98934282e9b7165011e-007"
+    },
+    {
+      "name": "cep78_contract_package_access_GFT Faucet",
+      "key": "uref-aa6b916183a09f7647caad1993f2a264084df033a0ca6321226fe0d7cda570c7-007"
+    },
+    {
+      "name": "cep78_contract_package_access_Wrap NFT721",
+      "key": "uref-1930212aff1150a503a876e0b0b3b2fe26b0f76f69517b035b4bd2aec6c45dc7-007"
+    },
+    {
+      "name": "cep78_contract_version_AFT Faucet",
+      "key": "uref-8d129126c5a38934f8140cb25bbeae981387f8072968decc9ea00f144341b1c6-007"
+    },
+    {
+      "name": "cep78_contract_version_Bridge Faucet",
+      "key": "uref-225b204c0989691e9cf9b7355ef624f7a65419df4a2ef77db11be00624fd8b1c-007"
+    },
+    {
+      "name": "cep78_contract_version_Cep78 Faucet",
+      "key": "uref-1a03e904762fd2866f77fc7935a313a6c6daf46a8d9a32d444de6347261e1849-007"
+    },
+    {
+      "name": "cep78_contract_version_GFT Faucet",
+      "key": "uref-69b4c4bd1eedfc6f25f9c28bc753cc7ab954fd2e2ceba1908621baeb1e3ef5d1-007"
+    },
+    {
+      "name": "cep78_contract_version_Wrap NFT721",
+      "key": "uref-874381d83b0176b77a9b43fc951353968937de3cbbaaf768925451fdb50b58eb-007"
     },
     {
       "name": "contract_owner",
@@ -11,7 +163,51 @@
     },
     {
       "name": "contract_version",
-      "key": "uref-b3e950e8650d5e32f02aa47d6b6bb3851cc00c22289a854ca0604aacf9f95854-007"
+      "key": "uref-c310c62512643e8d115eb108400ceb9cb2e0004bba44bc0b0d2a095e35f67deb-007"
+    },
+    {
+      "name": "contract_version_2",
+      "key": "hash-1ddbef9f5fda935a28da2f1475a922aae121e1c162416f053222af3f37067cd4"
+    },
+    {
+      "name": "contract_version_3",
+      "key": "hash-50e3c209e1de10bbac7236b79241909406c1c0d8d89f40bfd01d575261a842bd"
+    },
+    {
+      "name": "contract_version_4",
+      "key": "hash-5fb6b63a244b5dfaea3b0b9c35431b2ccea2dd94f49ca26b813b3c3144b964d0"
+    },
+    {
+      "name": "contract_version_5",
+      "key": "hash-64c136440a7f63dbb561d3008db86b543ea5e10b14f72f1abdd318f133643f62"
+    },
+    {
+      "name": "contract_version_7",
+      "key": "hash-a44c2d30dbbb5e582c882323e1cf0fa288fa55d7b2f38bc3b0169d5115537154"
+    },
+    {
+      "name": "csp_contract",
+      "key": "hash-be170557d9100704b63dc5de6039373dfdc8649cc467bf2f74ea14812d233def"
+    },
+    {
+      "name": "csp_contract_package_access",
+      "key": "uref-04dfa649be0cf9afa4eac0e2396d9e8da40d518a431a7a8e10be6f104b048934-007"
+    },
+    {
+      "name": "csp_factory_contract",
+      "key": "hash-60cd90c9196ee34f44bb9faff9d7dce0563368b37637afbcc82279f3c1ec8046"
+    },
+    {
+      "name": "csp_factory_contract_package_hash",
+      "key": "hash-4b1931f3263de381a94c7812178c325e4034903c68a3bd1c3fe14ac4c4dd97f1"
+    },
+    {
+      "name": "csp_version_1",
+      "key": "hash-be170557d9100704b63dc5de6039373dfdc8649cc467bf2f74ea14812d233def"
+    },
+    {
+      "name": "cspr_mint_fee",
+      "key": "uref-73cd0f387092df8b81924b59e63b98824364ce5e139da9168d156c93ff6a6015-007"
     },
     {
       "name": "dev",
@@ -19,11 +215,79 @@
     },
     {
       "name": "dotoracle_nft_bridge_contract",
-      "key": "hash-5db43d7bda61a954f4a73d51de9ee3a1c1a58d2b9cf895e1b98c6d3f73ee38e9"
+      "key": "hash-f0f91595bc63e1ce2f015dbacdd816619f63053cdf5fb41f19d69ffecbba755f"
     },
     {
       "name": "dotoracle_nft_bridge_contract_package_hash",
-      "key": "hash-9b320972294f954e41bcd6ae018373e6f1576dc8065a119b52a32f8f6facbbcf"
+      "key": "hash-35332e839314a3c5deabbbb6b3dfb9ee61928665ad83e1a728dd23238fce3253"
+    },
+    {
+      "name": "dto_nft_bridge_testnet",
+      "key": "hash-9bc453fb735acfc7a0584831a17b583ed126d91b5f4d26d7801a2d4562bcc24d"
+    },
+    {
+      "name": "dto_nft_bridge_testnet_package_hash",
+      "key": "hash-95fe6a52ff6dce1f7718c8850ded45b30ff3f249327cc932dd7f0eeb8d4d87da"
+    },
+    {
+      "name": "erc20_token_DAI",
+      "key": "hash-7cf50dba244f0122192b86568def53a1aa0a2181558c6ccf1643f1c2b1a6a7ea"
+    },
+    {
+      "name": "erc20_token_DAI_package_name",
+      "key": "hash-1744ef7ee4790d70e7193c18cc77e549a3ba9a7ca7b8d57f4434a49f9092191b"
+    },
+    {
+      "name": "erc20_token_LP-FP",
+      "key": "hash-cd685cf0c22ad627315daa1b477530457cb2eb8bda16ae3724df1db44482da56"
+    },
+    {
+      "name": "erc20_token_LP-FP_package_name",
+      "key": "hash-5c2cf5b39b0a88b58da8754fdf12b2b15d7eec4535ea1281d967895e876241db"
+    },
+    {
+      "name": "erc20_token_USDC",
+      "key": "hash-9ad86f144946e7dcec99a0a6cb77ce42a376184c67230bec2cf6f6d03b85ae16"
+    },
+    {
+      "name": "erc20_token_USDC_package_name",
+      "key": "hash-5dc31348b2840aa4e3eb6f28ca71782c65957d57cdaee861a81dc294514fd5fd"
+    },
+    {
+      "name": "erc20_token_USDT",
+      "key": "hash-e0fa2d81758a4de22ec3aad081c9231ae9360b7467f6182b52a9edc7036470f0"
+    },
+    {
+      "name": "erc20_token_USDT_package_name",
+      "key": "hash-0d1b00d98d789eb48f2bcbf6ae3cb8e1d5fef2472ee405daec680999cb1ff60f"
+    },
+    {
+      "name": "erc20_token_contract",
+      "key": "hash-f889e0e4d87d18e46014895ff57388f0822c9f56cbb9acf7720c70ac8ee212cf"
+    },
+    {
+      "name": "erc20_token_contract_DAI",
+      "key": "hash-f9967fa1fca23db16a50c55acf1dcf4c7af0df31306bf320f2e59e070a76dde4"
+    },
+    {
+      "name": "erc20_token_contract_LP-FP",
+      "key": "hash-d8bad2f4372cc6bd80632846010a09a5a8109c660efdfa33c1fe57b00849dd3e"
+    },
+    {
+      "name": "erc20_token_contract_USDC",
+      "key": "hash-1648916d95d61795defdc9cfaca2000f885c4974a85bc30ad7de0e811ae112ff"
+    },
+    {
+      "name": "erc20_token_contract_USDT",
+      "key": "hash-b8ca9cea063d9509019c517d33adbec52406a340d162ec9d48f5982f8a8e94cf"
+    },
+    {
+      "name": "market_place",
+      "key": "hash-256ba2f6bfffab12f0715b368dfa8fe729a704ca7544529f08677b423e60b29e"
+    },
+    {
+      "name": "market_place_package_name",
+      "key": "hash-cda8dcc028b3610faa29b98a9fde3c22758482deaa8caf742bb9a06788460949"
     },
     {
       "name": "minting_contract_access_uref",
@@ -42,6 +306,22 @@
       "key": "uref-5889202569051fc7629f2b22301c44947704c1af720ec722012ec19934f1cb7b-007"
     },
     {
+      "name": "mk_gen0_pk",
+      "key": "hash-3a3391c99d2546f5aa99dde573b72256da105b39343a3024245aec1434661033"
+    },
+    {
+      "name": "mk_gen0_pk_access",
+      "key": "uref-cd779c328493482583a662d732986fd8b9b23f6cba734ffcc02b24e954429356-007"
+    },
+    {
+      "name": "mk_pk",
+      "key": "hash-27be2ad749526c3958541e64e158e9306017324ea4297c87e928a0df926a7382"
+    },
+    {
+      "name": "mk_pk_access",
+      "key": "uref-742d2717824b18afb1075af563493ba9ad2e4d0dc7ae1cfdbd8ca5667de598be-007"
+    },
+    {
       "name": "nft-dongvc2-contract-package-wasm52fe0707d6e3298c00c41ba21a8b0b76b52097ac1c61e71a9908160538df98ca",
       "key": "dictionary-b03d18eb0c1f1ea1fd5268d6123f18e657301a037c5c77b1ce7368a748270d9c"
     },
@@ -55,15 +335,51 @@
     },
     {
       "name": "nft_contract",
-      "key": "hash-13270d53a99e783131add35acf4a38520ec407db3cc2cb2ca738f9bd24e861ff"
+      "key": "hash-3bad9fbefda94781d6d4c40a7d1da1a26d5d5b5e0c40ef018883c29c711ca47d"
     },
     {
       "name": "nft_contract_package",
-      "key": "hash-592acf0686299a4c4e07b17db7d42b26cb16c9402936c37d2f26c8303a375262"
+      "key": "hash-56d6e865a8d5277ae3ab9af79dda0afd61d4e80d6a973d26e090a16296dcda67"
     },
     {
       "name": "nft_contract_package_access",
-      "key": "uref-760cb69452e0464661ca8a08c88a6c214ced4952024afeabb551eb8046a4df47-007"
+      "key": "uref-552a90422d78f241828d8ab0db066edc755c346ae4943c860a74d96b9feaa1e8-007"
+    },
+    {
+      "name": "punk_contract",
+      "key": "hash-a44c2d30dbbb5e582c882323e1cf0fa288fa55d7b2f38bc3b0169d5115537154"
+    },
+    {
+      "name": "punk_contract_package",
+      "key": "hash-6317552b0752cc302c8d7f170340baf7c79a9dd899d19f31308af296fd3bd680"
+    },
+    {
+      "name": "punk_contract_package_access",
+      "key": "uref-487200bc36563a28217a673523d1c71fab80ac9240d12fedf03accc39cd7e59b-007"
+    },
+    {
+      "name": "punk_marketplace_contract_hash",
+      "key": "uref-fc37ccc275974ce8f3e9bc9e10309e04ab4a79c5da557852b1106c5b4b2eef6c-007"
+    },
+    {
+      "name": "send_nfts",
+      "key": "hash-5d69a25d0f5c1082228a3567bb0f5981a912ff9c4b100b0e004da21d354cd0e0"
+    },
+    {
+      "name": "send_nfts_access",
+      "key": "uref-a727e401f8fad8f97bbd06ec9843f41029a1b21ba0e743e1813f896b06fd79a8-007"
+    },
+    {
+      "name": "test_bridge",
+      "key": "hash-e31dee56d59fd9a1c6558054be3683df592077a9657253a4e5252ea5708cf30e"
+    },
+    {
+      "name": "test_bridge_package_hash",
+      "key": "hash-b9477e8807daadd7380ab52c4deca2a263b1344931de11bf0ecd94ca48c96975"
+    },
+    {
+      "name": "this_is_STAKE",
+      "key": "hash-fc78e3033bd2afe6d39bfff84b524cf6c5647e52ed2e20be14925c59030b41c0"
     }
   ],
   "mainPurse": "uref-beba664d16798fd6f33c8867d7c81706bab79ef2408be9ed31b81657a1dcec59-007",
