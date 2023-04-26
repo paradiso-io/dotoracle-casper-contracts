@@ -1,6 +1,7 @@
 use alloc::{boxed::Box, string::String, vec};
 
 use crate::constants::*;
+use crate::integrating_cep47;
 
 use casper_types::{
     CLType, CLTyped, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Parameter, U256,
@@ -87,6 +88,10 @@ fn init() -> EntryPoint {
 /// Returns the default set of ERC20 token entry points.
 pub(crate) fn default() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
+    let integrating_cep47_entrypoints = integrating_cep47::entry_points();
+    for e in &integrating_cep47_entrypoints {
+        entry_points.add_entry_point(e.clone());
+    }
     entry_points.add_entry_point(request_bridge_nft());
     entry_points.add_entry_point(set_wrapped_token());
     entry_points.add_entry_point(transfer_dev());
