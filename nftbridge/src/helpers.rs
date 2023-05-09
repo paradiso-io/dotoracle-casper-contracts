@@ -1,7 +1,8 @@
 use crate::address::Address;
+use crate::alloc::string::*;
 use crate::error::Error;
-use alloc::string::{String};
-use alloc::{vec::Vec};
+use alloc::string::String;
+use alloc::vec::Vec;
 use casper_contract::{
     contract_api::{self},
     ext_ffi,
@@ -10,7 +11,6 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use crate::alloc::string::*;
 use casper_types::bytesrepr::FromBytes;
 use casper_types::CLTyped;
 use casper_types::{
@@ -22,8 +22,8 @@ use casper_types::{bytesrepr::ToBytes, Key};
 use casper_types::{system::CallStackElement, URef, U256};
 use core::convert::TryFrom;
 use core::convert::TryInto;
+use core::mem::MaybeUninit;
 use core::u64;
-use core::{ mem::MaybeUninit};
 
 use crate::constants::*;
 
@@ -104,7 +104,6 @@ fn call_stack_element_to_address(call_stack_element: CallStackElement) -> Addres
     }
 }
 
-
 pub(crate) fn get_verified_caller() -> Result<Key, Error> {
     match *runtime::get_call_stack()
         .iter()
@@ -113,13 +112,9 @@ pub(crate) fn get_verified_caller() -> Result<Key, Error> {
     {
         CallStackElement::Session {
             account_hash: calling_account_hash,
-        } => {
-            Ok(Key::Account(calling_account_hash))
-        }
+        } => Ok(Key::Account(calling_account_hash)),
         CallStackElement::StoredSession { contract_hash, .. }
-        | CallStackElement::StoredContract { contract_hash, .. } => {
-            Ok(contract_hash.into())
-        }
+        | CallStackElement::StoredContract { contract_hash, .. } => Ok(contract_hash.into()),
     }
 }
 
@@ -197,7 +192,6 @@ pub(crate) fn get_immediate_caller_key() -> Key {
     get_key_from_address(&addr)
 }
 
-
 #[no_mangle]
 pub(crate) fn dictionary_write(dictionary_uref: URef, address: Address, amount: U256) {
     let dictionary_item_key = make_dictionary_item_key(address);
@@ -217,7 +211,7 @@ fn make_dictionary_item_key(owner: Address) -> String {
     base64::encode(&preimage)
 }
 
-pub (crate) fn make_dictionary_item_key_for_contract(contract_hash: Key) -> String {
+pub(crate) fn make_dictionary_item_key_for_contract(contract_hash: Key) -> String {
     let pre_contract = contract_hash.into_hash().unwrap_or_revert();
     // NOTE: As for now dictionary item keys are limited to 64 characters only. Instead of using
     // hashing (which will effectively hash a hash) we'll use base64. Preimage is about 33 bytes for
@@ -227,7 +221,6 @@ pub (crate) fn make_dictionary_item_key_for_contract(contract_hash: Key) -> Stri
     // larger preimage we can switch to base85 which has ratio of 4:5.
     hex::encode(&pre_contract)
 }
-
 
 #[no_mangle]
 pub(crate) fn dictionary_read(dictionary_uref: URef, address: Address) -> U256 {
@@ -367,13 +360,15 @@ impl TokenIdentifier {
     pub(crate) fn to_string(&self) -> String {
         match self {
             TokenIdentifier::Index(index) => index.to_string(),
-            TokenIdentifier::Hash(hash) => hash.clone()
+            TokenIdentifier::Hash(hash) => hash.clone(),
         }
     }
     pub(crate) fn from_string(value_string: String, identifier_mode: &NFTIdentifierMode) -> Self {
         match identifier_mode {
-            NFTIdentifierMode::Ordinal => TokenIdentifier::new_index(value_string.parse::<u64>().unwrap()),
-            NFTIdentifierMode::Hash => TokenIdentifier::new_hash(value_string.into())
+            NFTIdentifierMode::Ordinal => {
+                TokenIdentifier::new_index(value_string.parse::<u64>().unwrap())
+            }
+            NFTIdentifierMode::Hash => TokenIdentifier::new_hash(value_string.into()),
         }
     }
 }
@@ -414,4 +409,6 @@ pub(crate) fn get_unlock_id_key(unlock_id: &str) -> String {
     hex::encode(&key_bytes)
 }
 
-
+pub fn log_msg(msg: &str) {
+    // runtime::print(msg);
+}
