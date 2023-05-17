@@ -83,6 +83,18 @@ fn init() -> EntryPoint {
         EntryPointType::Contract,
     )
 }
+fn set_supported_token() -> EntryPoint {
+    EntryPoint::new(
+        String::from(SET_SUPPORTED_TOKEN_ENTRY_POINT_NAME),
+        vec![
+            Parameter::new(ARG_IS_SUPPORTED_TOKEN, CLType::Bool),
+            Parameter::new(ARG_SUPPORTED_TOKEN, CLType::Key),
+        ],
+        CLType::Unit,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
 
 /// Returns the default set of ERC20 token entry points.
 pub(crate) fn default() -> EntryPoints {
@@ -92,6 +104,7 @@ pub(crate) fn default() -> EntryPoints {
     entry_points.add_entry_point(transfer_dev());
     entry_points.add_entry_point(unlock_nft());
     entry_points.add_entry_point(transfer_owner());
+    entry_points.add_entry_point(set_supported_token());
     entry_points.add_entry_point(init());
     entry_points
 }

@@ -60,6 +60,7 @@ pub extern "C" fn init() {
     storage::new_dictionary(WRAPPED_TOKEN).unwrap_or_revert_with(Error::FailedToCreateDictionary);
     storage::new_dictionary(UNLOCK_IDS)
         .unwrap_or_revert_with(Error::FailedToCreateDictionaryUnlockIds);
+    storage::new_dictionary(SUPPORTED_TOKEN).unwrap_or_revert_with(Error::FailedToCreateDictionary);
 }
 
 #[no_mangle]
