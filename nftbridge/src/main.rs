@@ -28,7 +28,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs, U256,
+    contracts::NamedKeys, runtime_args, ContractHash, HashAddr, Key, RuntimeArgs, URef, U256,
 };
 use casper_types_derive::{FromBytes, ToBytes};
 
@@ -264,6 +264,21 @@ pub extern "C" fn set_supported_token() {
         runtime::revert(Error::InvalidDev);
     }
 
+    // register owner of NFT for this bridge contract
+    if is_supported_token {
+        let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+            CONTRACT_HASH_KEY_NAME,
+            Error::MissingBridgeContractHash,
+            Error::InvalidBridgeContractHash,
+        );
+        let _: (String, URef) = runtime::call_contract(
+            ContractHash::new(supported_token.into_hash().unwrap_or_revert()),
+            "register_owner",
+            runtime_args! {
+                "token_owner" => this_bridge_contract_hash,
+            },
+        );
+    }
     let supported_token_dictionary_key: String =
         make_dictionary_item_key_for_contract(supported_token);
 
