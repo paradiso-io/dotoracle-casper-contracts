@@ -50,11 +50,6 @@ pub(crate) fn get_key_from_address(addr: &Address) -> Key {
     self_key
 }
 
-pub(crate) fn get_self_key() -> Key {
-    let self_addr = get_self_address().unwrap_or_revert();
-    return get_key_from_address(&self_addr);
-}
-
 pub(crate) fn set_key<T: ToBytes + CLTyped>(name: &str, value: T) {
     match runtime::get_key(name) {
         Some(key) => {
@@ -66,17 +61,6 @@ pub(crate) fn set_key<T: ToBytes + CLTyped>(name: &str, value: T) {
             runtime::put_key(name, key);
         }
     }
-}
-
-pub(crate) fn get_self_address() -> Result<Address, Error> {
-    get_last_call_stack_item()
-        .map(call_stack_element_to_address)
-        .ok_or(Error::InvalidContext)
-}
-
-fn get_last_call_stack_item() -> Option<CallStackElement> {
-    let call_stack = runtime::get_call_stack();
-    call_stack.into_iter().rev().nth(0)
 }
 
 /// Gets the immediate call stack element of the current execution.

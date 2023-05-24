@@ -21,7 +21,7 @@ use crate::error::Error;
 use crate::helpers::*;
 use alloc::{
     string::{String, ToString},
-    vec::{self, *},
+    vec::*,
 };
 use casper_contract::{
     contract_api::{runtime, storage},
@@ -40,8 +40,10 @@ pub(crate) struct RequestBridge {
     nft_contract_hash: Key,
     identifier_mode: u8,
     request_id: String,
+    to_chainid: U256,
     request_index: U256,
-    receiver_address: String,
+    from: Key,
+    to: String,
     token_ids: Vec<u64>,
     token_hashes: Vec<String>,
 }
@@ -105,6 +107,7 @@ fn call() {
 #[no_mangle]
 pub extern "C" fn request_bridge_nft() {
     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH);
+    let to_chainid: U256 = runtime::get_named_arg(ARG_TO_CHAINID);
 
     let contract_hash_dictionary_key: String = make_dictionary_item_key_for_contract(contract_hash);
     // check as if token is wrapped token => revert
@@ -176,8 +179,10 @@ pub extern "C" fn request_bridge_nft() {
         nft_contract_hash: contract_hash,
         identifier_mode: identifier_mode as u8,
         request_id: request_id.clone(),
+        to_chainid: to_chainid.clone(),
         request_index: current_request_index,
-        receiver_address: receiver_address,
+        from: user.clone(),
+        to: receiver_address,
         token_ids: match identifier_mode {
             NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
                 ARG_TOKEN_IDS,
@@ -198,6 +203,13 @@ pub extern "C" fn request_bridge_nft() {
         },
     };
 
+    let token_ids_to_tring: Vec<String> = request_bridge_data
+        .token_ids
+        .clone()
+        .into_iter()
+        .map(|x| x.to_string())
+        .collect();
+
     let json_request_data = casper_serde_json_wasm::to_string(&request_bridge_data).unwrap();
 
     write_dictionary_value_from_key(REQUEST_IDS, &request_id, json_request_data);
@@ -214,16 +226,20 @@ pub extern "C" fn request_bridge_nft() {
     );
     events::emit(&NftBridgeEvent::RequestBridgeNft {
         nft_contract: contract_hash.clone(),
-        token_id: request_bridge_data.request_id.clone().to_string(),
+        token_ids: match identifier_mode {
+            NFTIdentifierMode::Ordinal => token_ids_to_tring.clone(),
+            NFTIdentifierMode::Hash => request_bridge_data.token_hashes.clone(),
+        },
         from: user.clone().to_formatted_string(),
-        to: request_bridge_data.receiver_address.clone().to_string(),
+        to: request_bridge_data.to.clone().to_string(),
         request_id: request_id.clone(),
         request_index: current_request_index.clone(),
+        to_chainid: to_chainid.clone(),
     });
 }
 
 #[no_mangle]
-pub extern "C" fn set_wrapped_token() -> Result<(), Error> {
+pub extern "C" fn set_wrapped_token() {
     let wrapped_token: Key = runtime::get_named_arg(ARG_WRAPPED_TOKEN);
     let is_wrapped_token: bool = runtime::get_named_arg(ARG_IS_WRAPPED_TOKEN);
     // let dev = runtime::get_key(DEV).unwrap_or_revert();
@@ -246,7 +262,6 @@ pub extern "C" fn set_wrapped_token() -> Result<(), Error> {
         &wrapped_token_dictionary_key,
         is_wrapped_token,
     );
-    Ok(())
 }
 
 #[no_mangle]
@@ -290,7 +305,7 @@ pub extern "C" fn set_supported_token() {
 }
 
 #[no_mangle]
-pub extern "C" fn transfer_owner() -> Result<(), Error> {
+pub extern "C" fn transfer_owner() {
     let new_contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
     // let current_contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap_or_revert();
     // let caller = helpers::get_verified_caller().unwrap_or_revert();
@@ -305,11 +320,10 @@ pub extern "C" fn transfer_owner() -> Result<(), Error> {
         runtime::revert(Error::InvalidContractOwner);
     }
     set_key(CONTRACT_OWNER_KEY_NAME, new_contract_owner);
-    Ok(())
 }
 
 #[no_mangle]
-pub extern "C" fn transfer_dev() -> Result<(), Error> {
+pub extern "C" fn transfer_dev() {
     let new_dev: Key = runtime::get_named_arg(ARG_NEW_DEV);
     //let current_dev = runtime::get_key(DEV).unwrap_or_revert();
     //let caller = get_immediate_caller_key();
@@ -324,7 +338,6 @@ pub extern "C" fn transfer_dev() -> Result<(), Error> {
         runtime::revert(Error::InvalidDev);
     }
     set_key(DEV, new_dev);
-    Ok(())
 }
 
 #[no_mangle]
@@ -340,6 +353,8 @@ pub extern "C" fn unlock_nft() {
     if caller != contract_owner {
         runtime::revert(Error::InvalidAccount);
     }
+
+    let from_chainid: U256 = runtime::get_named_arg(ARG_FROM_CHAINID);
 
     let unlock_id: String = runtime::get_named_arg(ARG_UNLOCK_ID);
 
@@ -394,6 +409,38 @@ pub extern "C" fn unlock_nft() {
         identifier_mode,
         token_identifiers,
     );
+
+    let token_ids = match identifier_mode {
+        NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
+            ARG_TOKEN_IDS,
+            Error::MissingTokenID,
+            Error::InvalidTokenIdentifier,
+        )
+        .unwrap_or_revert(),
+        NFTIdentifierMode::Hash => Vec::new(),
+    };
+    let token_hashes = match identifier_mode {
+        NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
+            ARG_TOKEN_HASHES,
+            Error::MissingTokenID,
+            Error::InvalidTokenIdentifier,
+        )
+        .unwrap_or_revert(),
+        NFTIdentifierMode::Ordinal => Vec::new(),
+    };
+    let token_ids_to_tring: Vec<String> = token_ids.into_iter().map(|x| x.to_string()).collect();
+
+    events::emit(&NftBridgeEvent::UnlockNft {
+        nft_contract: contract_hash.clone(),
+        token_ids: match identifier_mode {
+            NFTIdentifierMode::Ordinal => token_ids_to_tring.clone(),
+            NFTIdentifierMode::Hash => token_hashes,
+        },
+        from: caller.clone().to_formatted_string(),
+        to: target.clone().to_formatted_string(),
+        unlock_id: unlock_id.clone(),
+        from_chainid: from_chainid.clone(),
+    });
 }
 
 fn cep78_transfer_from(
