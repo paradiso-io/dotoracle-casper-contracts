@@ -282,16 +282,17 @@ const CEP78 = class {
         });
     }
 
-    async approveForAll(keys, operator, paymentAmount, ttl) {
+    async approveForAll({ keys, operator, paymentAmount, ttl }) {
         let key = createRecipientAddress(operator);
         let runtimeArgs = RuntimeArgs.fromMap({
             operator: key,
+            approve_all: CLValueBuilder.bool(true)
         });
 
         return await this.contractClient.contractCall({
             entryPoint: "set_approval_for_all",
             keys: keys,
-            paymentAmount: paymentAmount ? paymentAmount : "1000000000",
+            paymentAmount: paymentAmount ? paymentAmount : "5000000000",
             runtimeArgs,
             cb: (deployHash) => { },
             ttl: ttl ? ttl : DEFAULT_TTL,

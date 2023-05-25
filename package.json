@@ -16,6 +16,7 @@
     "blakejs": "^1.2.1",
     "casper-js-client-helper": "^1.0.1",
     "casper-js-sdk": "^2.9.1",
+    "casper-web3": "github:DegaLabs/casper-web3",
     "dotenv": "^16.0.1"
   }
 }

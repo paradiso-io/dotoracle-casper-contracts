@@ -42,28 +42,52 @@
       "key": "hash-6f2dfa647101d3a08021116afc018d83376b6c2e9c7af59422480c978bf942b6"
     },
     {
+      "name": "MK_MISTERY_BOX",
+      "key": "hash-035bc0c200823d58c251734ca8887b460711bde95451d6c3476eec37e15ef7b1"
+    },
+    {
+      "name": "MK_MYSTERY_BOX",
+      "key": "hash-d47a1b192543b697045b9dfc0d97bae7aff6578a979288b9b9925691923ae753"
+    },
+    {
       "name": "Wrapped Casper",
-      "key": "hash-d2e3138640521f0b227bd45b55503a4261f577e1f5b1f0095b54f67377715448"
+      "key": "hash-84e7c45f6c54adc871cb5d2c5352c084ad99c9a37d606e36c425d34ca1715c9f"
     },
     {
       "name": "Wrapped Casper_access_token",
-      "key": "uref-5d05d3cb141df9bea5a446d20e2ce917b5d6794a6eb4f9e61e099038ff091917-007"
+      "key": "uref-2f8dfc47079ae02d7093e47fc484ec5fd58746589f9f3b83f7e73ebf1d5070e9-007"
     },
     {
       "name": "Wrapped Casper_hash",
-      "key": "uref-f948c47dd0c1737a3e23b85c13de8cc8c33fef83226f0bef1001a399c9f7e9b2-007"
+      "key": "uref-a6fcbb6f8652442e44dedf259e41d4601e761ec6e05ecaf7da4958b550e40765-007"
     },
     {
       "name": "Wrapped Casper_package_hash",
-      "key": "hash-9dce8a3ce02a591d1dfaf0ed63efd859d2c8c23e0fd7f1a9b53937423b6fb595"
+      "key": "hash-e98f8f1f95eebd88efebabfeb4622cd28534b3372be96d7592a4e3493269a172"
     },
     {
       "name": "balance_of",
       "key": "uref-c326ea288d7704fb951a6de408adb451c89645580fdfa2b39399de9a5f84651e-007"
     },
     {
+      "name": "box_factory",
+      "key": "hash-5e852c789146b0e4aa30e4fc25a3962d9c1d1616f85bd57da81c770a470ad39c"
+    },
+    {
+      "name": "box_factory_access",
+      "key": "uref-6be542b00baf37e95fe40b0efb2a56576c4a41e3e5945e8fdf5158aa87d3e9c1-007"
+    },
+    {
       "name": "bridge_contract_hash",
       "key": "hash-0041b3ddf456c91ace82903b2ce98ed6e3e4df9c13611f4e3cb792f1660a0c50"
+    },
+    {
+      "name": "bridge_nft_pk",
+      "key": "hash-409ce11b317d46a4d8867f5215879cf4a0d6abe0a34acaf40b1e2baba860a083"
+    },
+    {
+      "name": "bridge_nft_pk_access",
+      "key": "uref-b2a4e982ab1f1864d59c607c96586395bbfc7ec61a30bdf4988d1358381f487b-007"
     },
     {
       "name": "casper_punk_contract",
@@ -79,11 +103,15 @@
     },
     {
       "name": "cep78_contract_hash_AFT Faucet",
-      "key": "hash-aeb9f1877ce978c73fa099c82c9ebd65af183a922c3f6588675dd5e640ea03a8"
+      "key": "hash-aac0ecd67407e5226929fa720be3f9da2e0dedd570c218d13d8068887d408d77"
     },
     {
       "name": "cep78_contract_hash_Bridge Faucet",
       "key": "hash-f7938b26185485dbef6ef2061d537d9c76c4693e38f2ad10e52b556812f1cc4b"
+    },
+    {
+      "name": "cep78_contract_hash_Casperpunks Mystery Box",
+      "key": "hash-64aabeaa53ada9eaa1265774ecd1f28de052c9f059eb2b2511e1a99ea022f097"
     },
     {
       "name": "cep78_contract_hash_Cep78 Faucet",
@@ -94,16 +122,28 @@
       "key": "hash-7d9297db2765629dce080dfa2c63d0b54f06049c33e4e6a9efadbb2f83120ef0"
     },
     {
+      "name": "cep78_contract_hash_Mistery Box",
+      "key": "hash-a31911cb4e5093bf1be87c5cf5d8544ff53a99c8659edbd7a4187ac7af429433"
+    },
+    {
+      "name": "cep78_contract_hash_Mystery Box",
+      "key": "hash-ff33f4b46919a4364ec91165912a902366d9890eca76545579b603999b91e23c"
+    },
+    {
       "name": "cep78_contract_hash_Wrap NFT721",
       "key": "hash-f8d0525827280b196581e3cfe3b42c1d8c09e1499f6b035e637913c978b3a6fb"
     },
     {
       "name": "cep78_contract_package_AFT Faucet",
-      "key": "hash-3bfc2e55584a16101872f26d766fb5ad183dae187df7a30d824036abe54836cc"
+      "key": "hash-e6e18e0c26ff1383c078d7a09f9dee6a368ece3be6fc4431084e4872f9756807"
     },
     {
       "name": "cep78_contract_package_Bridge Faucet",
       "key": "hash-8a6920534985dda707fcb290b294cc04a7c500a7458077bffabd3c934cb709a0"
+    },
+    {
+      "name": "cep78_contract_package_Casperpunks Mystery Box",
+      "key": "hash-27331e391e05f201a57e40ed18ea68f5438e0a5d50800de2293e0f29429be6e4"
     },
     {
       "name": "cep78_contract_package_Cep78 Faucet",
@@ -114,16 +154,28 @@
       "key": "hash-d301eaab9c51168c5a52912cf4c304abc2a3808eaac498de24ce1b6fc95f03af"
     },
     {
+      "name": "cep78_contract_package_Mistery Box",
+      "key": "hash-e4e6b521009cc881341ee7d57c6d7ad0350873ae0c06585f3a630e40aa8e3485"
+    },
+    {
+      "name": "cep78_contract_package_Mystery Box",
+      "key": "hash-48c59bff98c5491ec6b060e748d8a6d69625933fe9f6b15800ce58363039cf6e"
+    },
+    {
       "name": "cep78_contract_package_Wrap NFT721",
       "key": "hash-248691019b74744b5298612ec7d3ef760d1620ac192942192b6fb9eb876307b6"
     },
     {
       "name": "cep78_contract_package_access_AFT Faucet",
-      "key": "uref-2edb552b5765ab60e249775cbfa8fd62c198d9fcb155c75f424c9911f23f0fb5-007"
+      "key": "uref-aa78a81f0f44ae60db5c3a49ea42e24ab8e3f332b2263e717fdd61c6958d9a19-007"
     },
     {
       "name": "cep78_contract_package_access_Bridge Faucet",
       "key": "uref-532c1599909afed307759431d0e433b82bbae44d9b9661bb8e0005433ee48402-007"
+    },
+    {
+      "name": "cep78_contract_package_access_Casperpunks Mystery Box",
+      "key": "uref-cf6bb50404d4cd814b7fa75660ec005dfbb66d6c2a937d1aedc0e15fe2c0ecc1-007"
     },
     {
       "name": "cep78_contract_package_access_Cep78 Faucet",
@@ -134,16 +186,28 @@
       "key": "uref-aa6b916183a09f7647caad1993f2a264084df033a0ca6321226fe0d7cda570c7-007"
     },
     {
+      "name": "cep78_contract_package_access_Mistery Box",
+      "key": "uref-1467804d16c1ca8e22cc4716c99f72c60303c774e00bc7e2df72c0d50e3952dd-007"
+    },
+    {
+      "name": "cep78_contract_package_access_Mystery Box",
+      "key": "uref-643653864f890e3b43263409a54ac47a7a67007dcba15678300cb9509135f146-007"
+    },
+    {
       "name": "cep78_contract_package_access_Wrap NFT721",
       "key": "uref-1930212aff1150a503a876e0b0b3b2fe26b0f76f69517b035b4bd2aec6c45dc7-007"
     },
     {
       "name": "cep78_contract_version_AFT Faucet",
-      "key": "uref-8d129126c5a38934f8140cb25bbeae981387f8072968decc9ea00f144341b1c6-007"
+      "key": "uref-877e6478dc33eb1af983ab50e0549126dfb559904a250790256595aea0fb612c-007"
     },
     {
       "name": "cep78_contract_version_Bridge Faucet",
       "key": "uref-225b204c0989691e9cf9b7355ef624f7a65419df4a2ef77db11be00624fd8b1c-007"
+    },
+    {
+      "name": "cep78_contract_version_Casperpunks Mystery Box",
+      "key": "uref-4678386c3bb0afdd963ffaee95ab4892aeaf031faed4797f69c303df1fe95d21-007"
     },
     {
       "name": "cep78_contract_version_Cep78 Faucet",
@@ -152,6 +216,14 @@
     {
       "name": "cep78_contract_version_GFT Faucet",
       "key": "uref-69b4c4bd1eedfc6f25f9c28bc753cc7ab954fd2e2ceba1908621baeb1e3ef5d1-007"
+    },
+    {
+      "name": "cep78_contract_version_Mistery Box",
+      "key": "uref-1772617df5b42e25736530fd9aa9ba330688bf87076923b9917b6db0a1d0c445-007"
+    },
+    {
+      "name": "cep78_contract_version_Mystery Box",
+      "key": "uref-11cf6cd6fe9553c10c596a55dffb1807644f2b48d0ddc540cc6e18b322798ed5-007"
     },
     {
       "name": "cep78_contract_version_Wrap NFT721",
@@ -195,7 +267,7 @@
     },
     {
       "name": "csp_factory_contract",
-      "key": "hash-60cd90c9196ee34f44bb9faff9d7dce0563368b37637afbcc82279f3c1ec8046"
+      "key": "hash-c8a9c62f7e81c919fbfb6e8db7206b99b871dec17e83a73ea611c5957b991918"
     },
     {
       "name": "csp_factory_contract_package_hash",
@@ -228,6 +300,18 @@
     {
       "name": "dto_nft_bridge_testnet_package_hash",
       "key": "hash-95fe6a52ff6dce1f7718c8850ded45b30ff3f249327cc932dd7f0eeb8d4d87da"
+    },
+    {
+      "name": "erc20_bridge_from_casper_pk",
+      "key": "hash-e58588824763be84ec97a6b23d0f203741f4e66ce7f54edab31edef82be962ac"
+    },
+    {
+      "name": "erc20_bridge_from_casper_pk_access",
+      "key": "uref-a60efb6e29ec244454de97a7b157975457d8ed8923989ed2f4a358c57827190e-007"
+    },
+    {
+      "name": "erc20_bridge_testnet",
+      "key": "hash-7d3c48fdc688489cf2c27aba3ad2f9cb9e6ad19843ab24c2e059e2af17d073e7"
     },
     {
       "name": "erc20_token_DAI",
@@ -263,7 +347,7 @@
     },
     {
       "name": "erc20_token_contract",
-      "key": "hash-f889e0e4d87d18e46014895ff57388f0822c9f56cbb9acf7720c70ac8ee212cf"
+      "key": "hash-27dcb2efc403047a3f9fdad8acf879e3630706c9a38d28b8ef44201b1581fb3e"
     },
     {
       "name": "erc20_token_contract_DAI",
@@ -282,12 +366,20 @@
       "key": "hash-b8ca9cea063d9509019c517d33adbec52406a340d162ec9d48f5982f8a8e94cf"
     },
     {
+      "name": "event_nft_bridge",
+      "key": "hash-00bc38235189835c213f1c331c4322f54d56d4584418c7b5b7b71c92812b354d"
+    },
+    {
       "name": "market_place",
       "key": "hash-256ba2f6bfffab12f0715b368dfa8fe729a704ca7544529f08677b423e60b29e"
     },
     {
       "name": "market_place_package_name",
       "key": "hash-cda8dcc028b3610faa29b98a9fde3c22758482deaa8caf742bb9a06788460949"
+    },
+    {
+      "name": "max_per_one",
+      "key": "uref-269cac63aa7c4457b623bceb7aa565d78eaaa7ef57886f6b2f2205b56d465187-007"
     },
     {
       "name": "minting_contract_access_uref",
@@ -314,6 +406,14 @@
       "key": "uref-cd779c328493482583a662d732986fd8b9b23f6cba734ffcc02b24e954429356-007"
     },
     {
+      "name": "mk_lootbox_pk",
+      "key": "hash-8ddaf9b40759091ec608ac6c725c6b0a00ef26209c711ac9d4d1aded4517d94b"
+    },
+    {
+      "name": "mk_lootbox_pk_access",
+      "key": "uref-4f5e0f9255bf321cbffeded15339cd7410e10b750685d5fef213fc12010f8909-007"
+    },
+    {
       "name": "mk_pk",
       "key": "hash-27be2ad749526c3958541e64e158e9306017324ea4297c87e928a0df926a7382"
     },
@@ -334,6 +434,10 @@
       "key": "dictionary-52552f61b219544c945a58fb06f4d24f42f6f153ca6e7b2aa50361b428cfed80"
     },
     {
+      "name": "nft_bridge_testnet",
+      "key": "hash-230e0b1747d9d9b060a41d0b266bf5f195258fb278419196f27490f6e37099bc"
+    },
+    {
       "name": "nft_contract",
       "key": "hash-3bad9fbefda94781d6d4c40a7d1da1a26d5d5b5e0c40ef018883c29c711ca47d"
     },
@@ -344,6 +448,10 @@
     {
       "name": "nft_contract_package_access",
       "key": "uref-552a90422d78f241828d8ab0db066edc755c346ae4943c860a74d96b9feaa1e8-007"
+    },
+    {
+      "name": "number_of_minted_box",
+      "key": "uref-d8924693f81e15abe471e798968e48d268857b9087737112efaee73149cbba93-007"
     },
     {
       "name": "punk_contract",
@@ -380,6 +488,10 @@
     {
       "name": "this_is_STAKE",
       "key": "hash-fc78e3033bd2afe6d39bfff84b524cf6c5647e52ed2e20be14925c59030b41c0"
+    },
+    {
+      "name": "total_box",
+      "key": "uref-9ee458c56259839f7856cbe8fadf10ac253809eb188e678e01ebf68413dc0d8f-007"
     }
   ],
   "mainPurse": "uref-beba664d16798fd6f33c8867d7c81706bab79ef2408be9ed31b81657a1dcec59-007",

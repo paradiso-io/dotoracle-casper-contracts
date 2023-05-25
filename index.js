@@ -53,13 +53,19 @@ const genRanHex = (size = 64) =>
     .map(() => Math.floor(Math.random() * 16).toString(16))
     .join("");
 const NFTBridge = class {
-  constructor(contractHash, nodeAddress, chainName) {
+  constructor(contractHash, nodeAddress, chainName, namedKeysList = []) {
     this.contractHash = contractHash.startsWith("hash-")
       ? contractHash.slice(5)
       : contractHash;
     this.nodeAddress = nodeAddress;
     this.chainName = chainName;
     this.contractClient = new CasperContractClient(nodeAddress, chainName);
+    this.namedKeysList = [
+      "supported_token",
+      "request_ids",
+      "unlock_ids",
+    ];
+    this.namedKeysList.push(...namedKeysList)
   }
 
   static async createInstance(contractHash, nodeAddress, chainName) {
@@ -74,7 +80,7 @@ const NFTBridge = class {
     const { contractPackageHash, namedKeys } = await setClient(
       this.nodeAddress,
       this.contractHash,
-      ["request_ids"]
+      this.namedKeysList
     );
     console.log("done");
     this.contractPackageHash = contractPackageHash;
@@ -123,7 +129,7 @@ const NFTBridge = class {
 
   }) {
     if (!paymentAmount) {
-      paymentAmount = paymentAmount ? paymentAmount : "100000000000";
+      paymentAmount = paymentAmount ? paymentAmount : "50000000000";
       ttl = ttl ? ttl : DEFAULT_TTL;
     }
 
@@ -143,6 +149,7 @@ const NFTBridge = class {
     nftContractHash = new CLByteArray(
       Uint8Array.from(Buffer.from(nftContractHash, "hex"))
     );
+    console.log("identifierMode", identifierMode)
     let runtimeArgs = {};
     if (identifierMode == 0) {
       tokenIds = tokenIds.map((e) => CLValueBuilder.u64(e));
@@ -169,7 +176,7 @@ const NFTBridge = class {
       });
     }
 
-    console.log("sending");
+    console.log("sending", runtimeArgs);
     let trial = 5;
     while (true) {
       try {
@@ -259,7 +266,7 @@ const NFTBridge = class {
         receiver_address: token_owner_to_casper,
         nft_contract_hash: createRecipientAddress(nftContractHash),
         from_chainid: CLValueBuilder.u256(fromChainId),
-         
+
       })
     } else {
       console.log("TOkenIDS A: ", tokenIds)
@@ -308,6 +315,55 @@ const NFTBridge = class {
         // let deployHash = await client.putDeploy(deploy);
         // console.log("deployHash: ", deployHash)
 
+        return hash;
+      } catch (e) {
+        trial--
+        if (trial == 0) {
+          throw e;
+        }
+        console.log('waiting 2 seconds')
+        await sleep(3000)
+      }
+    }
+  }
+  async setSupportedToken({
+    keys,
+    nftContractHash,
+    isSupportedToken,
+    paymentAmount,
+    ttl,
+  }) {
+    if (!paymentAmount) {
+      paymentAmount = paymentAmount ? paymentAmount : "3000000000";
+      ttl = ttl ? ttl : DEFAULT_TTL;
+    }
+    nftContractHash = nftContractHash.startsWith("hash-")
+      ? nftContractHash.slice(5)
+      : nftContractHash;
+    console.log("nftContractHash", nftContractHash);
+    nftContractHash = new CLByteArray(
+      Uint8Array.from(Buffer.from(nftContractHash, "hex"))
+    );
+
+    let runtimeArgs = {};
+    runtimeArgs = RuntimeArgs.fromMap({
+      supported_token: createRecipientAddress(nftContractHash),
+      is_supported_token: CLValueBuilder.bool(isSupportedToken),
+    })
+    console.log("sending");
+    let trial = 5;
+    while (true) {
+      try {
+        let hash = await this.contractClient.contractCall({
+          entryPoint: "set_supported_token",
+          keys: keys,
+          paymentAmount,
+          runtimeArgs,
+          cb: (deployHash) => {
+            console.log("deployHash", deployHash);
+          },
+          ttl,
+        });
         return hash;
       } catch (e) {
         trial--

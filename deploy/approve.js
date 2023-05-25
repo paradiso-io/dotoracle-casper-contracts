@@ -6,6 +6,7 @@ const {
   Keys,
   CLAccountHash,
   CLPublicKey,
+  CLByteArray
 } = require("casper-js-sdk");
 
 const CEP78 = require("./cep78");
@@ -23,7 +24,7 @@ let nft_bridge_contract = contractInfo.namedKeys
   .key.slice(5);
 
 let nft_contract =
-  "805347b595cc24814f0d50482069a1dba24f9bfb2823c6e900386f147f25754b";
+  "3a100016a814263b64223357b169ac94ff84d1fd5826efaf1935543287066fc1";
 let privateKeyBuffer = Keys.Ed25519.parsePrivateKey(
   Keys.Ed25519.readBase64WithPEM(privateKeyPem)
 );
@@ -39,13 +40,16 @@ const test = async () => {
   let cep78 = new CEP78(nft_contract, NODE_ADDRESS, CHAIN_NAME);
   await cep78.init();
 
-  let hash = await cep78.approve(
-    KEYS,
-    CLPublicKey.fromHex("0106ca7c39cd272dbf21a86eeb3b36b7c26e2e9b94af64292419f7862936bca2ca"),
-    //new CLAccountHash(Uint8Array.from(Buffer.from(nft_bridge_contract, "hex"))),
-    32,
-    "1000000000"
+  let bridgeContract = "00bc38235189835c213f1c331c4322f54d56d4584418c7b5b7b71c92812b354d"
+  bridgeContract = new CLByteArray(
+    Uint8Array.from(Buffer.from(bridgeContract, "hex"))
   );
+
+
+  let hash = await cep78.approveForAll({
+    keys: KEYS,
+    operator: bridgeContract
+  });
 
   console.log(`... Contract installation deployHash: ${hash}`);
 
