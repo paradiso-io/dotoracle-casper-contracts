@@ -17,7 +17,7 @@ ${key}
 -----END PRIVATE KEY-----
 `; // abb key
 
-let nft_bridge_contract = "00bc38235189835c213f1c331c4322f54d56d4584418c7b5b7b71c92812b354d"
+let nft_bridge_contract = "850e04500276c5cbada3b5584cc97f36095181371a71d6f87602a178b0d8c440"
 
 let nft_contract =
   "3a100016a814263b64223357b169ac94ff84d1fd5826efaf1935543287066fc1"; // NFT CEP78

@@ -1,5 +1,4 @@
 use crate::address::Address;
-use crate::alloc::string::*;
 use crate::error::Error;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -339,21 +338,6 @@ impl TokenIdentifier {
             return Some(hash);
         }
         None
-    }
-
-    pub(crate) fn to_string(&self) -> String {
-        match self {
-            TokenIdentifier::Index(index) => index.to_string(),
-            TokenIdentifier::Hash(hash) => hash.clone(),
-        }
-    }
-    pub(crate) fn from_string(value_string: String, identifier_mode: &NFTIdentifierMode) -> Self {
-        match identifier_mode {
-            NFTIdentifierMode::Ordinal => {
-                TokenIdentifier::new_index(value_string.parse::<u64>().unwrap())
-            }
-            NFTIdentifierMode::Hash => TokenIdentifier::new_hash(value_string.into()),
-        }
     }
 }
 

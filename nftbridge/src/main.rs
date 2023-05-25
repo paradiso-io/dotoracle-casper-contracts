@@ -13,6 +13,7 @@ mod error;
 mod events;
 mod helpers;
 mod named_keys;
+mod upgrade;
 
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +21,7 @@ use crate::constants::*;
 use crate::error::Error;
 use crate::helpers::*;
 use alloc::{
+    format,
     string::{String, ToString},
     vec::*,
 };
@@ -57,6 +59,9 @@ pub extern "C" fn init() {
     set_key(CONTRACT_HASH_KEY_NAME, contract_hash);
     let contract_package_hash: Key = runtime::get_named_arg(ARG_CONTRACT_PACKAGE_HASH);
     set_key(ARG_CONTRACT_PACKAGE_HASH, contract_package_hash);
+    let dev: Key = runtime::get_named_arg(DEV);
+    let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
+    named_keys::default(contract_owner, dev);
 
     storage::new_dictionary(REQUEST_IDS).unwrap_or_revert_with(Error::FailedToCreateDictionary);
     storage::new_dictionary(WRAPPED_TOKEN).unwrap_or_revert_with(Error::FailedToCreateDictionary);
@@ -67,41 +72,33 @@ pub extern "C" fn init() {
 
 #[no_mangle]
 fn call() {
-    let contract_name: String = runtime::get_named_arg(NFT_BRIDGE_CONTRACT_KEY_NAME);
+    let contract_name: String = runtime::get_named_arg("contract_name");
     let dev: Key = runtime::get_named_arg(DEV);
-    let contract_hash_key_name = String::from(contract_name.clone());
-
     let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
-    //let fee_token: Key = runtime::get_named_arg(ARG_FEE_TOKEN_HASH);
+    let disable_older_version_or_not: bool = runtime::get_named_arg("disable_older_version_or_not");
 
-    let named_keys: NamedKeys = named_keys::default(contract_name, contract_owner, dev, None);
+    if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        let (contract_hash, contract_package_hash) =
+            upgrade::install_contract(contract_name, entry_points::default(), NamedKeys::new());
 
-    let (contract_package_hash, _access_uref) = storage::create_contract_package_at_hash();
-
-    // // We store contract on-chain
-    // let (contract_hash, _version) = storage::new_locked_contract(
-    //     entry_points::default(),
-    //     Some(named_keys),
-    //     Some(String::from(contract_package_hash_key_name)),
-    //     None,
-    // );
-    let (contract_hash, _version) =
-        storage::add_contract_version(contract_package_hash, entry_points::default(), named_keys);
-    runtime::put_key("bridge_nft_pk", Key::from(contract_package_hash));
-    runtime::put_key("bridge_nft_pk_access", Key::from(_access_uref));
-
-    runtime::put_key(CONTRACT_OWNER_KEY_NAME, contract_owner);
-    runtime::put_key(DEV, dev);
-    runtime::put_key(contract_hash_key_name.as_str(), Key::from(contract_hash));
-
-    runtime::call_contract::<()>(
-        contract_hash,
-        INIT_ENTRY_POINT_NAME,
-        runtime_args! {
-            ARG_CONTRACT_HASH => Key::from(contract_hash),
-            ARG_CONTRACT_PACKAGE_HASH => Key::from(contract_package_hash)
-        },
-    );
+        runtime::call_contract::<()>(
+            contract_hash,
+            INIT_ENTRY_POINT_NAME,
+            runtime_args! {
+                "contract_hash" => Key::from(contract_hash),
+                "contract_package_hash" => Key::from(contract_package_hash),
+                "contract_owner" => Key::from(contract_owner),
+                "dev" => Key::from(dev),
+            },
+        );
+    } else {
+        upgrade::upgrade_contract(
+            contract_name,
+            entry_points::default(),
+            NamedKeys::new(),
+            disable_older_version_or_not,
+        );
+    }
 }
 
 #[no_mangle]

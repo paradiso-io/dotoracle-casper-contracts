@@ -1,6 +1,6 @@
 //! Constants used by the Stake contract.
 
-pub const NFT_BRIDGE_CONTRACT_KEY_NAME: &str = "dotoracle_nft_bridge_contract";
+pub const CONTRACT_NAME: &str = "contract_name";
 
 // Named keys
 pub const FEE_TOKEN_KEY_NAME: &str = "contract_hash";
@@ -143,7 +143,6 @@ pub const NUMBER_OF_MINTED_TOKENS: &str = "number_of_minted_tokens";
 pub const INSTALLER: &str = "installer";
 pub const JSON_SCHEMA: &str = "json_schema";
 pub const METADATA_SCHEMA: &str = "metadata_schema";
-pub const CONTRACT_NAME: &str = "nft_contract";
 pub const HASH_KEY_NAME: &str = "nft_contract_package";
 pub const ACCESS_KEY_NAME: &str = "nft_contract_package_access";
 pub const CONTRACT_VERSION: &str = "contract_version";

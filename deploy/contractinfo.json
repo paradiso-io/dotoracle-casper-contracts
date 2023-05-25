@@ -492,6 +492,46 @@
     {
       "name": "total_box",
       "key": "uref-9ee458c56259839f7856cbe8fadf10ac253809eb188e678e01ebf68413dc0d8f-007"
+    },
+    {
+      "name": "upgradable_nft_bridge_contract_hash",
+      "key": "hash-f6bade42560bd239dfe37a8074de0c51e3eee473a0ab5ff91311dc4cc1298f85"
+    },
+    {
+      "name": "upgradable_nft_bridge_contract_hash_wrapped",
+      "key": "uref-3ee5246a229edad94648ae0de18ec37150403d1d64e1c94cd58b98555a1f4bf6-007"
+    },
+    {
+      "name": "upgradable_nft_bridge_package_access_token",
+      "key": "uref-fee4cbcde2ade9828a0935361d406d5dbec88291e96bea4e47609ab43ea14c51-007"
+    },
+    {
+      "name": "upgradable_nft_bridge_package_hash",
+      "key": "hash-fa7b4d157c530a8f6f06aa56020e4008b9b9b8b8045d28330fc213cc5a03b1ba"
+    },
+    {
+      "name": "upgradable_nft_bridge_package_hash_wrapped",
+      "key": "uref-9b2529e2d8aa37b124783f8f3f507cdd028bafc0134fa7753254d55162a2b65d-007"
+    },
+    {
+      "name": "upgradable_v1_contract_hash",
+      "key": "hash-850e04500276c5cbada3b5584cc97f36095181371a71d6f87602a178b0d8c440"
+    },
+    {
+      "name": "upgradable_v1_contract_hash_wrapped",
+      "key": "uref-1f228abacc1433e94c50ffa7f7f4cf88a39c2b520e95fbf5be63869b421727a6-007"
+    },
+    {
+      "name": "upgradable_v1_package_access_token",
+      "key": "uref-dc26e787d775f70c2b6801a0d7c066411d095d91eb0b632cb3856e4c95bd2909-007"
+    },
+    {
+      "name": "upgradable_v1_package_hash",
+      "key": "hash-fb3ce26a61ee0b357c4a4a302cc2747e9885d8c7810146ee9552d30e08db1c5d"
+    },
+    {
+      "name": "upgradable_v1_package_hash_wrapped",
+      "key": "uref-79a71aa48bd883e2c1b702ea5fd672988e34429004218568fb6aaadf0fdca703-007"
     }
   ],
   "mainPurse": "uref-beba664d16798fd6f33c8867d7c81706bab79ef2408be9ed31b81657a1dcec59-007",
