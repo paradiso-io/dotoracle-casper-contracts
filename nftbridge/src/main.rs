@@ -73,7 +73,6 @@ pub extern "C" fn init() {
 #[no_mangle]
 fn call() {
     let contract_name: String = runtime::get_named_arg("contract_name");
-    
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         let dev: Key = runtime::get_named_arg(DEV);
         let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
@@ -91,7 +90,8 @@ fn call() {
             },
         );
     } else {
-        let disable_older_version_or_not: bool = runtime::get_named_arg("disable_older_version_or_not");
+        let disable_older_version_or_not: bool =
+            runtime::get_named_arg("disable_older_version_or_not");
         upgrade::upgrade_contract(
             contract_name,
             entry_points::default(),
@@ -107,18 +107,6 @@ pub extern "C" fn request_bridge_nft() {
     let to_chainid: U256 = runtime::get_named_arg(ARG_TO_CHAINID);
 
     let contract_hash_dictionary_key: String = make_dictionary_item_key_for_contract(contract_hash);
-    // check as if token is wrapped token => revert
-    if get_dictionary_value_from_key::<bool>(WRAPPED_TOKEN, &contract_hash_dictionary_key).is_some()
-    {
-        let is_wrapped_token_value =
-            get_dictionary_value_from_key::<bool>(WRAPPED_TOKEN, &contract_hash_dictionary_key)
-                .unwrap_or_revert();
-
-        if is_wrapped_token_value == true {
-            runtime::revert(Error::InvalidWrappedToken);
-        }
-    }
-
     // check as if token is supported
 
     let supported_token_item =
@@ -236,32 +224,6 @@ pub extern "C" fn request_bridge_nft() {
 }
 
 #[no_mangle]
-pub extern "C" fn set_wrapped_token() {
-    let wrapped_token: Key = runtime::get_named_arg(ARG_WRAPPED_TOKEN);
-    let is_wrapped_token: bool = runtime::get_named_arg(ARG_IS_WRAPPED_TOKEN);
-    // let dev = runtime::get_key(DEV).unwrap_or_revert();
-    // let caller = helpers::get_verified_caller().unwrap_or_revert();
-    let caller = helpers::get_verified_caller().unwrap_or_revert();
-    let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
-        DEV,
-        Error::MissingDev,
-        Error::InvalidDev,
-    );
-
-    if caller != current_dev {
-        runtime::revert(Error::InvalidDev);
-    }
-
-    let wrapped_token_dictionary_key: String = make_dictionary_item_key_for_contract(wrapped_token);
-
-    write_dictionary_value_from_key(
-        WRAPPED_TOKEN,
-        &wrapped_token_dictionary_key,
-        is_wrapped_token,
-    );
-}
-
-#[no_mangle]
 pub extern "C" fn set_supported_token() {
     let supported_token: Key = runtime::get_named_arg(ARG_SUPPORTED_TOKEN);
     let is_supported_token: bool = runtime::get_named_arg(ARG_IS_SUPPORTED_TOKEN);
@@ -304,8 +266,6 @@ pub extern "C" fn set_supported_token() {
 #[no_mangle]
 pub extern "C" fn transfer_owner() {
     let new_contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
-    // let current_contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap_or_revert();
-    // let caller = helpers::get_verified_caller().unwrap_or_revert();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
     let current_contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
         CONTRACT_OWNER_KEY_NAME,
@@ -322,8 +282,6 @@ pub extern "C" fn transfer_owner() {
 #[no_mangle]
 pub extern "C" fn transfer_dev() {
     let new_dev: Key = runtime::get_named_arg(ARG_NEW_DEV);
-    //let current_dev = runtime::get_key(DEV).unwrap_or_revert();
-    //let caller = get_immediate_caller_key();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
     let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
         DEV,
@@ -339,8 +297,6 @@ pub extern "C" fn transfer_dev() {
 
 #[no_mangle]
 pub extern "C" fn unlock_nft() {
-    //let caller = get_immediate_caller_key();
-    //let contract_owner = runtime::get_key(CONTRACT_OWNER_KEY_NAME).unwrap();
     let caller = helpers::get_verified_caller().unwrap_or_revert();
     let contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
         CONTRACT_OWNER_KEY_NAME,
@@ -449,8 +405,6 @@ fn cep78_transfer_from(
 ) {
     let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
     let contract_hash: ContractHash = ContractHash::new(contract_hash_addr);
-    // let self_address = Address::Account(AccountHash::from_formatted_str("account-hash-32b0eaaa6c0d024e2e7efc34a0a8aad7889cdbb87c71f07cb0eb4f515d5696de").unwrap());
-    //let self_key = get_key_from_address(&self_address);
     match identifier_mode {
         NFTIdentifierMode::Ordinal => {
             for token_identifier in token_identifiers {

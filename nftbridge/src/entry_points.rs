@@ -10,13 +10,13 @@ fn request_bridge_nft() -> EntryPoint {
     EntryPoint::new(
         String::from(REQUEST_BRIDGE_ENTRY_POINT_NAME),
         vec![
+            Parameter::new(ARG_NFT_CONTRACT_HASH, CLType::Key),
+            Parameter::new(ARG_TO_CHAINID, U256::cl_type()),
+            Parameter::new(ARG_REQUEST_ID, String::cl_type()),
+            Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
             Parameter::new(ARG_TOKEN_IDS, CLType::List(Box::new(CLType::U64))),
             Parameter::new(ARG_TOKEN_HASHES, CLType::List(Box::new(CLType::String))),
-            Parameter::new(ARG_TO_CHAINID, U256::cl_type()),
-            Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
-            Parameter::new(ARG_NFT_CONTRACT_HASH, CLType::Key),
             Parameter::new(ARG_RECEIVER_ADDRESS, String::cl_type()),
-            Parameter::new(ARG_REQUEST_ID, String::cl_type()),
         ],
         CLType::String,
         EntryPointAccess::Public,
@@ -65,7 +65,12 @@ fn transfer_dev() -> EntryPoint {
 fn init() -> EntryPoint {
     EntryPoint::new(
         String::from(INIT_ENTRY_POINT_NAME),
-        vec![Parameter::new(ARG_CONTRACT_HASH, CLType::Key)],
+        vec![
+            Parameter::new(ARG_CONTRACT_HASH, CLType::Key),
+            Parameter::new(ARG_CONTRACT_PACKAGE_HASH, CLType::Key),
+            Parameter::new(ARG_CONTRACT_OWNER, CLType::Key),
+            Parameter::new(DEV, CLType::Key),
+        ],
         CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
