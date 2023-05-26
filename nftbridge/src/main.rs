@@ -73,11 +73,10 @@ pub extern "C" fn init() {
 #[no_mangle]
 fn call() {
     let contract_name: String = runtime::get_named_arg("contract_name");
-    let dev: Key = runtime::get_named_arg(DEV);
-    let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
-    let disable_older_version_or_not: bool = runtime::get_named_arg("disable_older_version_or_not");
-
+    
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        let dev: Key = runtime::get_named_arg(DEV);
+        let contract_owner: Key = runtime::get_named_arg(ARG_CONTRACT_OWNER);
         let (contract_hash, contract_package_hash) =
             upgrade::install_contract(contract_name, entry_points::default(), NamedKeys::new());
 
@@ -92,6 +91,7 @@ fn call() {
             },
         );
     } else {
+        let disable_older_version_or_not: bool = runtime::get_named_arg("disable_older_version_or_not");
         upgrade::upgrade_contract(
             contract_name,
             entry_points::default(),
