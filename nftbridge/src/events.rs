@@ -29,13 +29,16 @@ pub enum NftBridgeEvent {
         request_index: U256,
         to_chainid: U256,
     },
-    UnlockNft {
+    ApproveUnlockNft {
         nft_contract: Key,
         token_ids: Vec<String>,
         from: String,
         to: String,
         unlock_id: String,
         from_chainid: U256,
+    },
+    ClaimUnlockNft {
+        token_owner: Key,
     },
 }
 
@@ -51,14 +54,15 @@ impl NftBridgeEvent {
                 request_index: _,
                 to_chainid: _,
             } => "request_bridge_nft",
-            NftBridgeEvent::UnlockNft {
+            NftBridgeEvent::ApproveUnlockNft {
                 nft_contract: _,
                 token_ids: _,
                 from: _,
                 to: _,
                 unlock_id: _,
                 from_chainid: _,
-            } => "unlock_nft",
+            } => "approve_unlock_nft",
+            NftBridgeEvent::ClaimUnlockNft { token_owner: _ } => "claim_unlock_nft",
         }
         .to_string()
     }
@@ -100,7 +104,7 @@ pub(crate) fn emit(pair_event: &NftBridgeEvent) {
             events.push(event);
         }
 
-        NftBridgeEvent::UnlockNft {
+        NftBridgeEvent::ApproveUnlockNft {
             nft_contract,
             token_ids,
             from,
@@ -120,6 +124,14 @@ pub(crate) fn emit(pair_event: &NftBridgeEvent) {
             event.insert("to", to.to_string());
             event.insert("unlock_id", unlock_id.to_string());
             event.insert("from_chainid", from_chainid.to_string());
+            events.push(event);
+        }
+
+        NftBridgeEvent::ClaimUnlockNft { token_owner } => {
+            let mut event = BTreeMap::new();
+            event.insert("contract_package_hash", package.to_string());
+            event.insert("event_type", pair_event.type_name());
+            event.insert("token_owner", token_owner.to_string());
             events.push(event);
         }
     };

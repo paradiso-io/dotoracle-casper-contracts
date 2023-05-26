@@ -494,6 +494,66 @@
       "key": "uref-9ee458c56259839f7856cbe8fadf10ac253809eb188e678e01ebf68413dc0d8f-007"
     },
     {
+      "name": "upgradable_approve_v1_contract_hash",
+      "key": "hash-c58d15729f280e91fc85760ac34e2adc9625cae260024769b60efce6c0f97fb6"
+    },
+    {
+      "name": "upgradable_approve_v1_contract_hash_wrapped",
+      "key": "uref-2fdcac25ae9cb9db466fac749ce4f345c28f60e8ba95621e1df3642c4d56f920-007"
+    },
+    {
+      "name": "upgradable_approve_v1_package_access_token",
+      "key": "uref-355b4ee45104aaa8ae356fa7a21e3788ab6f96199570c52284f3c1686098c4db-007"
+    },
+    {
+      "name": "upgradable_approve_v1_package_hash",
+      "key": "hash-e2a0fc9da14292a7ff7be4229901a42b737d0d1b127970b804284d2dc2891b81"
+    },
+    {
+      "name": "upgradable_approve_v1_package_hash_wrapped",
+      "key": "uref-bc1a4c083cf54162689703d4b4da42fe56691524da77e4d72f0f5d5dc6f757ac-007"
+    },
+    {
+      "name": "upgradable_approve_v2_contract_hash",
+      "key": "hash-520fc53184a354a659ec2b8a73cfd4a9a3317483271cee80ced332260542cc41"
+    },
+    {
+      "name": "upgradable_approve_v2_contract_hash_wrapped",
+      "key": "uref-dc0b71d93a7aff58c02c3d8b8f9d7e881860078ed160fb1f7f2e97b1aedabad5-007"
+    },
+    {
+      "name": "upgradable_approve_v2_package_access_token",
+      "key": "uref-e02eddda07d923d60203d1777d3f206a030e529eabe0f63fed5d2f2138966dd2-007"
+    },
+    {
+      "name": "upgradable_approve_v2_package_hash",
+      "key": "hash-56210c360bbbd1660e0b08634932580b3ca2fa1bb6d691521ab955f9ec1f1079"
+    },
+    {
+      "name": "upgradable_approve_v2_package_hash_wrapped",
+      "key": "uref-5b3fdca9782f13dbe371a0f06c8bdd2cf286dd684a14896347c7cb8f65200700-007"
+    },
+    {
+      "name": "upgradable_approve_v3_contract_hash",
+      "key": "hash-6c6dd4f31ed62a5dcc7cdb750b1b45e7acb92fdd1a14d0990b2b8f3ccf719e0d"
+    },
+    {
+      "name": "upgradable_approve_v3_contract_hash_wrapped",
+      "key": "uref-961e15f84649640c716ea0cc625c951690c14a36422e5c7887e27ea9c458005a-007"
+    },
+    {
+      "name": "upgradable_approve_v3_package_access_token",
+      "key": "uref-f74c16bf5fb772b5349aa15ce84242dadb58f0ce6282f0bc5d57dbc591fe5192-007"
+    },
+    {
+      "name": "upgradable_approve_v3_package_hash",
+      "key": "hash-2e63f6bc4ef42e5816326dac0be25741ae7b0a09bfce0ffb6cb43e33a2201535"
+    },
+    {
+      "name": "upgradable_approve_v3_package_hash_wrapped",
+      "key": "uref-14efa4ef237cdc5debda9d63b40bfc1f0bfa79e54210cef5eaae7045c5bcb498-007"
+    },
+    {
       "name": "upgradable_nft_bridge_contract_hash",
       "key": "hash-f6bade42560bd239dfe37a8074de0c51e3eee473a0ab5ff91311dc4cc1298f85"
     },

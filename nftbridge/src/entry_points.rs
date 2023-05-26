@@ -24,9 +24,9 @@ fn request_bridge_nft() -> EntryPoint {
     )
 }
 
-fn unlock_nft() -> EntryPoint {
+fn approve_to_unlock_nft() -> EntryPoint {
     EntryPoint::new(
-        String::from(UNLOCK_NFT_ENTRY_POINT_NAME),
+        String::from(APPROVE_TO_UNLOCK_NFT_ENTRY_POINT_NAME),
         vec![
             Parameter::new(ARG_TOKEN_IDS, CLType::List(Box::new(CLType::U64))),
             Parameter::new(ARG_TOKEN_HASHES, CLType::List(Box::new(CLType::String))),
@@ -36,6 +36,16 @@ fn unlock_nft() -> EntryPoint {
             Parameter::new(ARG_TARGET_KEY, CLType::Key),
             Parameter::new(ARG_UNLOCK_ID, String::cl_type()),
         ],
+        CLType::String,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
+
+fn claim_unlock_nft() -> EntryPoint {
+    EntryPoint::new(
+        String::from(CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME),
+        vec![],
         CLType::String,
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -94,9 +104,10 @@ pub(crate) fn default() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(request_bridge_nft());
     entry_points.add_entry_point(transfer_dev());
-    entry_points.add_entry_point(unlock_nft());
+    entry_points.add_entry_point(approve_to_unlock_nft());
     entry_points.add_entry_point(transfer_owner());
     entry_points.add_entry_point(set_supported_token());
+    entry_points.add_entry_point(claim_unlock_nft());
     entry_points.add_entry_point(init());
     entry_points
 }

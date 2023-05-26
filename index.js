@@ -64,6 +64,7 @@ const NFTBridge = class {
       "supported_token",
       "request_ids",
       "unlock_ids",
+      "user_unlock_id_list"
     ];
     this.namedKeysList.push(...namedKeysList)
   }
@@ -203,6 +204,46 @@ const NFTBridge = class {
     }
   }
 
+  async claimUnlockNft({
+    keys,
+    paymentAmount,
+    ttl,
+
+  }) {
+    if (!paymentAmount) {
+      paymentAmount = paymentAmount ? paymentAmount : "50000000000";
+      ttl = ttl ? ttl : DEFAULT_TTL;
+    }
+
+    let runtimeArgs = RuntimeArgs.fromMap({
+    })
+
+    console.log("sending", runtimeArgs);
+    let trial = 5;
+    while (true) {
+      try {
+        let hash = await this.contractClient.contractCall({
+          entryPoint: "claim_unlock_nft",
+          keys: keys,
+          paymentAmount,
+          runtimeArgs,
+          cb: (deployHash) => {
+            console.log("deployHash", deployHash);
+          },
+          ttl,
+        });
+
+        return hash;
+      } catch (e) {
+        trial--
+        if (trial == 0) {
+          throw e;
+        }
+        console.log('waiting 2 seconds')
+        await sleep(3000)
+      }
+    }
+  }
   async unlockNFT({
     keys,
     tokenIds,

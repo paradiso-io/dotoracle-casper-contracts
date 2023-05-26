@@ -7,6 +7,7 @@ compile_error!("target arch should be wasm32: compile with '--target wasm32-unkn
 extern crate alloc;
 
 mod address;
+mod approve_to_unlock;
 pub mod constants;
 mod entry_points;
 mod error;
@@ -34,6 +35,7 @@ use casper_types::{
 };
 use casper_types_derive::{FromBytes, ToBytes};
 
+use approve_to_unlock::ApproveUnlock;
 use events::NftBridgeEvent;
 use helpers::get_immediate_caller_key;
 
@@ -68,6 +70,8 @@ pub extern "C" fn init() {
     storage::new_dictionary(UNLOCK_IDS)
         .unwrap_or_revert_with(Error::FailedToCreateDictionaryUnlockIds);
     storage::new_dictionary(SUPPORTED_TOKEN).unwrap_or_revert_with(Error::FailedToCreateDictionary);
+    storage::new_dictionary(USER_UNLOCK_ID_LIST)
+        .unwrap_or_revert_with(Error::FailedToCreateDictionary);
 }
 
 #[no_mangle]
@@ -295,8 +299,110 @@ pub extern "C" fn transfer_dev() {
     set_key(DEV, new_dev);
 }
 
+// #[no_mangle]
+// pub extern "C" fn unlock_nft_old() {
+//     let caller = helpers::get_verified_caller().unwrap_or_revert();
+//     let contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
+//         CONTRACT_OWNER_KEY_NAME,
+//         Error::MissingContractOwner,
+//         Error::InvalidContractOwner,
+//     );
+//     if caller != contract_owner {
+//         runtime::revert(Error::InvalidAccount);
+//     }
+
+//     let from_chainid: U256 = runtime::get_named_arg(ARG_FROM_CHAINID);
+
+//     let unlock_id: String = runtime::get_named_arg(ARG_UNLOCK_ID);
+
+//     //verify unlock id
+//     //tx - from chain id - to chain id- index - origin token address- origin chain id
+//     let unlock_id_parts: Vec<&str> = unlock_id.split("-").collect();
+//     if unlock_id_parts.len() != 6 {
+//         runtime::revert(Error::UnlockIdIllFormatted);
+//     }
+
+//     {
+//         if unlock_id_parts[0].len() != 66 || !unlock_id_parts[0].starts_with("0x") {
+//             runtime::revert(Error::UnlockIdIllFormatted);
+//         }
+//         let tx_hash_without_prefix = unlock_id_parts[0].replace("0x", "");
+//         let decoded = hex::decode(&tx_hash_without_prefix);
+//         if decoded.is_err() {
+//             runtime::revert(Error::TxHashUnlockIdIllFormatted);
+//         }
+//     }
+
+//     let unlock_id_key = get_unlock_id_key(&unlock_id);
+//     if get_dictionary_value_from_key::<bool>(UNLOCK_IDS, &unlock_id_key).is_some() {
+//         runtime::revert(Error::UnlockIdRepeated);
+//     }
+//     write_dictionary_value_from_key(UNLOCK_IDS, &unlock_id_key, true);
+
+//     let mut origin_contract_address = "hash-".to_string();
+//     origin_contract_address.push_str(unlock_id_parts[4]);
+//     let contract_hash: Key = runtime::get_named_arg(ARG_NFT_CONTRACT_HASH);
+//     if contract_hash.to_formatted_string() != origin_contract_address {
+//         runtime::revert(Error::UnlockIdIllFormatted);
+//     }
+
+//     let identifier_mode = get_identifier_mode_from_runtime_args();
+//     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
+//     if token_identifiers.len() > 10 {
+//         runtime::revert(Error::TooManyTokenIds);
+//     }
+//     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
+
+//     // let self_key = get_self_key();
+//     let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+//         CONTRACT_HASH_KEY_NAME,
+//         Error::MissingBridgeContractHash,
+//         Error::InvalidBridgeContractHash,
+//     );
+
+//     cep78_transfer_from(
+//         &contract_hash,
+//         this_bridge_contract_hash,
+//         target,
+//         identifier_mode,
+//         token_identifiers,
+//     );
+
+//     let token_ids = match identifier_mode {
+//         NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
+//             ARG_TOKEN_IDS,
+//             Error::MissingTokenID,
+//             Error::InvalidTokenIdentifier,
+//         )
+//         .unwrap_or_revert(),
+//         NFTIdentifierMode::Hash => Vec::new(),
+//     };
+//     let token_hashes = match identifier_mode {
+//         NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
+//             ARG_TOKEN_HASHES,
+//             Error::MissingTokenID,
+//             Error::InvalidTokenIdentifier,
+//         )
+//         .unwrap_or_revert(),
+//         NFTIdentifierMode::Ordinal => Vec::new(),
+//     };
+//     let token_ids_to_tring: Vec<String> = token_ids.into_iter().map(|x| x.to_string()).collect();
+
+//     events::emit(&NftBridgeEvent::UnlockNft {
+//         nft_contract: contract_hash.clone(),
+//         token_ids: match identifier_mode {
+//             NFTIdentifierMode::Ordinal => token_ids_to_tring.clone(),
+//             NFTIdentifierMode::Hash => token_hashes,
+//         },
+//         from: caller.clone().to_formatted_string(),
+//         to: target.clone().to_formatted_string(),
+//         unlock_id: unlock_id.clone(),
+//         from_chainid: from_chainid.clone(),
+//     });
+// }
+
 #[no_mangle]
-pub extern "C" fn unlock_nft() {
+pub extern "C" fn approve_to_unlock_nft() {
     let caller = helpers::get_verified_caller().unwrap_or_revert();
     let contract_owner = helpers::get_stored_value_with_user_errors::<Key>(
         CONTRACT_OWNER_KEY_NAME,
@@ -312,6 +418,7 @@ pub extern "C" fn unlock_nft() {
     let unlock_id: String = runtime::get_named_arg(ARG_UNLOCK_ID);
 
     //verify unlock id
+    //tx - from chain id - to chain id- index - origin token address- origin chain id
     let unlock_id_parts: Vec<&str> = unlock_id.split("-").collect();
     if unlock_id_parts.len() != 6 {
         runtime::revert(Error::UnlockIdIllFormatted);
@@ -348,21 +455,6 @@ pub extern "C" fn unlock_nft() {
     }
     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
 
-    // let self_key = get_self_key();
-    let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
-        CONTRACT_HASH_KEY_NAME,
-        Error::MissingBridgeContractHash,
-        Error::InvalidBridgeContractHash,
-    );
-
-    cep78_transfer_from(
-        &contract_hash,
-        this_bridge_contract_hash,
-        target,
-        identifier_mode,
-        token_identifiers,
-    );
-
     let token_ids = match identifier_mode {
         NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
             ARG_TOKEN_IDS,
@@ -372,7 +464,7 @@ pub extern "C" fn unlock_nft() {
         .unwrap_or_revert(),
         NFTIdentifierMode::Hash => Vec::new(),
     };
-    let token_hashes = match identifier_mode {
+    let token_hashes: Vec<String> = match identifier_mode {
         NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
             ARG_TOKEN_HASHES,
             Error::MissingTokenID,
@@ -381,9 +473,39 @@ pub extern "C" fn unlock_nft() {
         .unwrap_or_revert(),
         NFTIdentifierMode::Ordinal => Vec::new(),
     };
-    let token_ids_to_tring: Vec<String> = token_ids.into_iter().map(|x| x.to_string()).collect();
+    let token_ids_to_tring: Vec<String> = token_ids
+        .clone()
+        .into_iter()
+        .map(|x| x.to_string())
+        .collect();
 
-    events::emit(&NftBridgeEvent::UnlockNft {
+    // add approve
+
+    let add_approve: ApproveUnlock = ApproveUnlock {
+        token_ids: token_ids.clone(),
+        token_hashes: token_hashes.clone(),
+        nft_contract_hash: contract_hash.clone(),
+        identifier_mode: match identifier_mode {
+            NFTIdentifierMode::Ordinal => 0u8,
+            NFTIdentifierMode::Hash => 1u8,
+        },
+    };
+    let user_item_key = helpers::encode_dictionary_item_key(target);
+
+    let user_unlock_ids_current =
+        get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key);
+
+    let mut user_unlock_ids_new = if user_unlock_ids_current.is_some() {
+        user_unlock_ids_current.unwrap()
+    } else {
+        Vec::<ApproveUnlock>::new()
+    };
+
+    // let mut user_mint_ids_new = Vec::<ApproveMint>::new();
+    user_unlock_ids_new.push(add_approve);
+    write_dictionary_value_from_key(USER_UNLOCK_ID_LIST, &user_item_key, user_unlock_ids_new);
+
+    events::emit(&NftBridgeEvent::ApproveUnlockNft {
         nft_contract: contract_hash.clone(),
         token_ids: match identifier_mode {
             NFTIdentifierMode::Ordinal => token_ids_to_tring.clone(),
@@ -396,6 +518,41 @@ pub extern "C" fn unlock_nft() {
     });
 }
 
+#[no_mangle]
+pub extern "C" fn claim_unlock_nft() {
+    let caller = get_immediate_caller_key();
+    // let token_owner_key: Key = get_immediate_caller_key();
+    let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_HASH_KEY_NAME,
+        Error::MissingBridgeContractHash,
+        Error::InvalidBridgeContractHash,
+    );
+    let user_item_key = helpers::encode_dictionary_item_key(caller);
+
+    let user_unlock_ids_current =
+        get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key)
+            .unwrap_or_revert();
+
+    for approve_unlock in user_unlock_ids_current {
+        let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
+        let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
+        let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
+        let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
+        cep78_transfer_to_user(
+            &this_nft_contract_hash,
+            this_bridge_contract_hash,
+            caller,
+            this_identifier_mode,
+            this_token_ids,
+            this_token_hashes,
+        );
+    }
+
+    events::emit(&NftBridgeEvent::ClaimUnlockNft {
+        token_owner: caller.clone(),
+    });
+}
+
 fn cep78_transfer_from(
     contract_hash: &Key,
     source: Key,
@@ -405,6 +562,16 @@ fn cep78_transfer_from(
 ) {
     let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
     let contract_hash: ContractHash = ContractHash::new(contract_hash_addr);
+
+    // Register_owner
+    let _: (String, URef) = runtime::call_contract(
+        contract_hash,
+        "register_owner",
+        runtime_args! {
+            "token_owner" => target,
+        },
+    );
+
     match identifier_mode {
         NFTIdentifierMode::Ordinal => {
             for token_identifier in token_identifiers {
@@ -432,5 +599,54 @@ fn cep78_transfer_from(
                 );
             }
         }
+    }
+}
+
+fn cep78_transfer_to_user(
+    contract_hash: &Key,
+    source: Key,
+    target: Key,
+    identifier_mode: u8,
+    token_ids: Vec<u64>,
+    token_hashes: Vec<String>,
+) {
+    let contract_hash_addr: HashAddr = contract_hash.into_hash().unwrap_or_revert();
+    let contract_hash: ContractHash = ContractHash::new(contract_hash_addr);
+
+    // Register_owner
+    let _: (String, URef) = runtime::call_contract(
+        contract_hash,
+        "register_owner",
+        runtime_args! {
+            "token_owner" => target,
+        },
+    );
+
+    if identifier_mode == 0u8 {
+        for token_identifier in token_ids {
+            let _: (String, Key) = runtime::call_contract(
+                contract_hash,
+                TRANSFER_ENTRY_POINT_NAME,
+                runtime_args! {
+                    ARG_SOURCE_KEY => source,
+                    ARG_TARGET_KEY => target,
+                    ARG_TOKEN_ID => token_identifier
+                },
+            );
+        }
+    } else if identifier_mode == 1u8 {
+        for token_identifier in token_hashes {
+            let _: (String, Key) = runtime::call_contract(
+                contract_hash,
+                TRANSFER_ENTRY_POINT_NAME,
+                runtime_args! {
+                    ARG_SOURCE_KEY => source,
+                    ARG_TARGET_KEY => target,
+                    ARG_TOKEN_HASH => token_identifier
+                },
+            );
+        }
+    } else {
+        runtime::revert(Error::InvalidContext)
     }
 }

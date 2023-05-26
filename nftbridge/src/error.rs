@@ -30,6 +30,7 @@ pub enum Error {
     MissingBridgeContractHash = 104,
     InvalidBridgeContractHash = 105,
     InvalidSupportedToken = 106,
+    InvalidKey = 107,
 }
 
 impl From<Error> for ApiError {

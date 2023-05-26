@@ -34,10 +34,8 @@ let KEYS = new Keys.Ed25519.parseKeyPair(
 
 const test = async () => {
   let bridge = await sdk.NFTBridge.createInstance(nft_bridge_contract, NODE_ADDRESS, CHAIN_NAME)
-  let hash = await bridge.setSupportedToken({
+  let hash = await bridge.claimUnlockNft({
     keys: KEYS,
-    nftContractHash: nft_contract,
-    isSupportedToken: true,
   })
 
   console.log(`... Contract installation deployHash: ${hash}`);

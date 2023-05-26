@@ -26,7 +26,8 @@ pub const USER_REWARD_PER_TOKEN_PAID_KEY_NAME: &str = "user_reward_per_token_pai
 
 pub const REQUEST_BRIDGE_ENTRY_POINT_NAME: &str = "request_bridge_nft";
 pub const SET_SUPPORTED_TOKEN_ENTRY_POINT_NAME: &str = "set_supported_token";
-pub const UNLOCK_NFT_ENTRY_POINT_NAME: &str = "unlock_nft";
+pub const CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME: &str = "claim_unlock_nft";
+pub const APPROVE_TO_UNLOCK_NFT_ENTRY_POINT_NAME: &str = "approve_to_unlock_nft";
 pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
 pub const INIT_ENTRY_POINT_NAME: &str = "init";
 
@@ -187,3 +188,4 @@ pub const ENTRY_POINT_METADATA: &str = "metadata";
 pub const ENTRY_POINT_SET_APPROVE_FOR_ALL: &str = "set_approval_for_all";
 pub const ENTRY_POINT_SET_TOKEN_METADATA: &str = "set_token_metadata";
 pub const SUPPORTED_TOKEN: &str = "supported_token";
+pub const USER_UNLOCK_ID_LIST: &str = "user_unlock_id_list";

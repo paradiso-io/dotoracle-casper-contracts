@@ -1,6 +1,7 @@
 use crate::address::Address;
 use crate::error::Error;
-use alloc::string::String;
+use alloc::string::{String, ToString};
+
 use alloc::vec::Vec;
 use casper_contract::{
     contract_api::{self},
@@ -17,8 +18,10 @@ use casper_types::{
     bytesrepr::{self},
     ApiError,
 };
+use serde::{Deserialize, Serialize};
+
 use casper_types::{bytesrepr::ToBytes, Key};
-use casper_types::{system::CallStackElement, URef, U256};
+use casper_types::{system::CallStackElement, ContractHash, URef, U256};
 use core::convert::TryFrom;
 use core::convert::TryInto;
 use core::mem::MaybeUninit;
@@ -215,7 +218,7 @@ pub(crate) fn dictionary_read(dictionary_uref: URef, address: Address) -> U256 {
 }
 
 #[repr(u8)]
-#[derive(Copy, Clone)]
+#[derive(Serialize, Deserialize, Copy, Clone)]
 pub enum NFTIdentifierMode {
     Ordinal = 0,
     Hash = 1,
@@ -379,4 +382,11 @@ pub(crate) fn get_unlock_id_key(unlock_id: &str) -> String {
 
 pub fn log_msg(msg: &str) {
     // runtime::print(msg);
+}
+pub fn encode_dictionary_item_key(key: Key) -> String {
+    match key {
+        Key::Account(account_hash) => account_hash.to_string(),
+        Key::Hash(hash_addr) => ContractHash::new(hash_addr).to_string(),
+        _ => runtime::revert(Error::InvalidKey),
+    }
 }
