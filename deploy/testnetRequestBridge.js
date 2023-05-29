@@ -24,7 +24,7 @@ const test = async () => {
   const hash = await contract.contractCalls.requestBridgeNft.makeDeployAndSend({
       keys: KEYS,
       args: {
-        tokenIds: ["656"],
+        tokenIds: configed.tokenIds,
         nftPackageHash: new CLByteArray(
           Uint8Array.from(Buffer.from(nft_contract, "hex"))
         ),

@@ -169,4 +169,20 @@ fn test_unlock() {
     exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "claim_unlock_nft", runtime_args! {
     }, true);
 
+    // approve again
+    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_package_hash, "set_approval_for_all", runtime_args! {
+        "operator" => tc.nft_bridge_contract_hash,
+        "approve_all" => true
+    }, true);
+
+    // request bridge again
+    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "request_bridge_nft", runtime_args! {
+        "nft_package_hash" => tc.nft_package_hash,
+        "to_chainid" => U256::from(43113u64),
+        "identifier_mode" => 0u8,
+        "request_id" => "1111111111111111111111111111111111111111111111111111111111111112".to_string(),
+        "token_ids" => vec![1u64],
+        "receiver_address" => "0xbf26a30547a7dda6e86fc3C33396F28FFf6902c3".to_string()
+    }, true);
+
 }

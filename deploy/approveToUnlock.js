@@ -25,7 +25,7 @@ const test = async () => {
       args: {
         targetKey: KEYS.publicKey,
         unlockId: `0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-94-${nft_contract}-96945816564243`,
-        tokenIds: ["656"],
+        tokenIds: configed.tokenIds,
         fromChainid: 43113,
         identifierMode: 0,
         nftPackageHash: new CLByteArray(

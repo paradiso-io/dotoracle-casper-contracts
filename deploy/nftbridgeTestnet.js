@@ -28,7 +28,7 @@ let publicKey = Keys.Secp256K1.privateToPublicKey(Uint8Array.from(privateKeyBuff
 let KEYS = new Keys.Secp256K1.parseKeyPair(publicKey, Uint8Array.from(privateKeyBuffer), 'raw')
 
 console.log('pubkey', KEYS.accountHex())
-const contract_key_name = "nft_bridge_custodian_4"
+const contract_key_name = "nft_bridge_custodian_8"
 // let contract_owner = "02038df1cff6b55615858b1acd2ebcce98db164f88cf88919c7b045268571cc49cb7" // MPC
 const contract_owner = KEYS.accountHex()
 // let dev = "017e80955a6d493a4a4b9f1b5dd23d2edcdc2c8b00fcd9689f2f735f501bd088c5" // ABB

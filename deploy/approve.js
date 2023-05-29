@@ -29,7 +29,7 @@ const test = async () => {
       operator: bridgeContract,
       approveAll: true
     },
-    paymentAmount: "5000000000"
+    paymentAmount: "2000000000"
   })
 
   console.log(`... Contract installation deployHash: ${hash}`);

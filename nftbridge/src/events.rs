@@ -131,7 +131,7 @@ pub(crate) fn emit(pair_event: &NftBridgeEvent) {
             let mut event = BTreeMap::new();
             event.insert("contract_package_hash", package.to_string());
             event.insert("event_type", pair_event.type_name());
-            event.insert("token_owner", token_owner.to_string());
+            event.insert("token_owner", encode_dictionary_item_key(token_owner.clone()));
             events.push(event);
         }
     };
