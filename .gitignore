@@ -3,3 +3,4 @@ node_modules
 keys.json
 target
 tests/wasm
+keys.json

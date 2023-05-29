@@ -2,9 +2,7 @@ extern crate alloc;
 
 use alloc::{string::String, vec::Vec};
 use casper_types::{
-    bytesrepr,
-    bytesrepr::{FromBytes, ToBytes},
-    CLType, CLTyped, Key,
+    Key,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 

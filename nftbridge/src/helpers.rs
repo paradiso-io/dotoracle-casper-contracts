@@ -197,8 +197,8 @@ fn make_dictionary_item_key(owner: Address) -> String {
     base64::encode(&preimage)
 }
 
-pub(crate) fn make_dictionary_item_key_for_contract(contract_hash: Key) -> String {
-    let pre_contract = contract_hash.into_hash().unwrap_or_revert();
+pub(crate) fn make_dictionary_item_key_for_contract(item: Key) -> String {
+    let pre_contract = item.into_hash().unwrap_or_revert();
     // NOTE: As for now dictionary item keys are limited to 64 characters only. Instead of using
     // hashing (which will effectively hash a hash) we'll use base64. Preimage is about 33 bytes for
     // both Address variants, and approximated base64-encoded length will be 4 * (33 / 3) ~ 44
@@ -314,6 +314,12 @@ pub(crate) fn get_named_arg_with_user_errors<T: FromBytes>(
     bytesrepr::deserialize(arg_bytes).map_err(|_| invalid)
 }
 
+pub fn require(v: bool, e: Error) {
+    if !v {
+        runtime::revert(e);
+    }
+}
+
 #[derive(PartialEq, Clone)]
 pub(crate) enum TokenIdentifier {
     Index(u64),
@@ -380,7 +386,7 @@ pub(crate) fn get_unlock_id_key(unlock_id: &str) -> String {
     hex::encode(&key_bytes)
 }
 
-pub fn log_msg(msg: &str) {
+pub fn log_msg(_msg: &str) {
     // runtime::print(msg);
 }
 pub fn encode_dictionary_item_key(key: Key) -> String {

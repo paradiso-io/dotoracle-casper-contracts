@@ -37,7 +37,7 @@ pub fn upgrade_contract(
     entry_points: EntryPoints,
     named_keys: NamedKeys,
     disable_older_version_or_not: bool,
-) {
+) -> Key {
     let package_hash: ContractPackageHash =
         runtime::get_key(&format!("{}_package_hash", contract_name))
             .unwrap_or_revert()
@@ -64,4 +64,7 @@ pub fn upgrade_contract(
         )
         .unwrap_or_revert();
     }
+
+    Key::from(contract_hash)
+
 }

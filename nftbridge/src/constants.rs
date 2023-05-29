@@ -1,7 +1,7 @@
 //! Constants used by the Stake contract.
 
 pub const CONTRACT_NAME: &str = "contract_name";
-
+pub const IS_LOCKED: &str = "is_locked";
 // Named keys
 pub const FEE_TOKEN_KEY_NAME: &str = "contract_hash";
 pub const CONTRACT_HASH_KEY_NAME: &str = "contract_hash";
@@ -38,7 +38,7 @@ pub const ARG_RECEIVER_ADDRESS: &str = "receiver_address";
 pub const ARG_REQUEST_ID: &str = "request_id";
 pub const ARG_TO_CHAINID: &str = "to_chainid";
 pub const ARG_FROM_CHAINID: &str = "from_chainid";
-pub const ARG_NFT_CONTRACT_HASH: &str = "nft_contract_hash";
+pub const ARG_NFT_PACKAGE_HASH: &str = "nft_package_hash";
 pub const ARG_IDENTIFIER_MODE: &str = "identifier_mode";
 pub const ARG_UNLOCK_ID: &str = "unlock_id";
 pub const ARG_CONTRACT_OWNER: &str = "contract_owner";

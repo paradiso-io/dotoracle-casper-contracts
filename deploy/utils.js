@@ -35,15 +35,17 @@ const Utils = {
     while (i != 0) {
       const [deploy, raw] = await client.getDeploy(deployHash);
       if (raw.execution_results.length !== 0) {
+
         // @ts-ignore
         if (raw.execution_results[0].result.Success) {
+          console.log("raw.execution_results[0].result.Success: ")
           return deploy;
         } else {
           // @ts-ignore
           throw Error(
             "Contract execution: " +
-              // @ts-ignore
-              raw.execution_results[0].result.Failure.error_message
+            // @ts-ignore
+            raw.execution_results[0].result.Failure.error_message
           );
         }
       } else {
@@ -79,5 +81,9 @@ const Utils = {
     }
     return undefined;
   },
+  genRanHex: (size = 64) =>
+    [...Array(size)]
+      .map(() => Math.floor(Math.random() * 16).toString(16))
+      .join("")
 };
 module.exports = Utils;
