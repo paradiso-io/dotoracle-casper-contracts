@@ -35,23 +35,21 @@ use casper_contract::{
 use casper_types::{
     contracts::NamedKeys, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use casper_types_derive::{FromBytes, ToBytes};
+use casper_types_derive::{FromBytes, ToBytes, CLTyped};
 
 use approve_to_unlock::ApproveUnlock;
 use events::NftBridgeEvent;
 use helpers::get_immediate_caller_key;
 
-#[derive(Serialize, Deserialize, Clone, ToBytes, FromBytes)]
+#[derive(Serialize, Deserialize, Clone, ToBytes, FromBytes, CLTyped)]
 pub(crate) struct RequestBridge {
     nft_package_hash: Key,
     identifier_mode: u8,
-    request_id: String,
     to_chainid: U256,
     request_index: U256,
     from: Key,
     to: String,
-    token_ids: Vec<u64>,
-    token_hashes: Vec<String>,
+    token_ids: Vec<String>
 }
 
 #[no_mangle]
@@ -168,22 +166,6 @@ pub extern "C" fn request_bridge_nft() {
         Error::InvalidBridgeContractHash,
     );
 
-    let request_id: String = runtime::get_named_arg(ARG_REQUEST_ID);
-    if request_id.chars().count() != 64 {
-        runtime::revert(Error::RequestIdIlledFormat);
-    }
-    let decoded = hex::decode(&request_id);
-    if decoded.is_err() {
-        runtime::revert(Error::RequestIdIlledFormat);
-    }
-    if request_id.len() != 64 || decoded.unwrap().len() != 32 {
-        runtime::revert(Error::RequestIdIlledFormat);
-    }
-
-    if get_dictionary_value_from_key::<String>(REQUEST_IDS, &request_id).is_some() {
-        runtime::revert(Error::RequestIdRepeated);
-    }
-
     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
     if token_identifiers.len() > 10 {
         runtime::revert(Error::TooManyTokenIds);
@@ -197,41 +179,17 @@ pub extern "C" fn request_bridge_nft() {
     let request_bridge_data = RequestBridge {
         nft_package_hash: contract_package_hash,
         identifier_mode: identifier_mode as u8,
-        request_id: request_id.clone(),
         to_chainid: to_chainid.clone(),
         request_index: current_request_index,
         from: user.clone(),
         to: receiver_address,
         token_ids: match identifier_mode {
-            NFTIdentifierMode::Ordinal => get_named_arg_with_user_errors::<Vec<u64>>(
-                ARG_TOKEN_IDS,
-                Error::MissingTokenID,
-                Error::InvalidTokenIdentifier,
-            )
-            .unwrap_or_revert(),
-            NFTIdentifierMode::Hash => Vec::new(),
-        },
-        token_hashes: match identifier_mode {
-            NFTIdentifierMode::Hash => get_named_arg_with_user_errors::<Vec<String>>(
-                ARG_TOKEN_HASHES,
-                Error::MissingTokenID,
-                Error::InvalidTokenIdentifier,
-            )
-            .unwrap_or_revert(),
-            NFTIdentifierMode::Ordinal => Vec::new(),
-        },
+            NFTIdentifierMode::Ordinal => token_identifiers.clone().into_iter().map(|x| x.get_index().unwrap().to_string()).collect(),
+            NFTIdentifierMode::Hash => token_identifiers.clone().into_iter().map(|x| x.get_hash().unwrap()).collect(),
+        }
     };
 
-    let token_ids_to_tring: Vec<String> = request_bridge_data
-        .token_ids
-        .clone()
-        .into_iter()
-        .map(|x| x.to_string())
-        .collect();
-
-    let json_request_data = casper_serde_json_wasm::to_string(&request_bridge_data).unwrap();
-
-    write_dictionary_value_from_key(REQUEST_IDS, &request_id, json_request_data);
+    write_dictionary_value_from_key(REQUEST_IDS, &current_request_index.to_string(), request_bridge_data);
 
     set_key(REQUEST_INDEX, current_request_index);
 
@@ -244,16 +202,7 @@ pub extern "C" fn request_bridge_nft() {
         token_identifiers,
     );
     events::emit(&NftBridgeEvent::RequestBridgeNft {
-        nft_contract: contract_package_hash.clone(),
-        token_ids: match identifier_mode {
-            NFTIdentifierMode::Ordinal => token_ids_to_tring.clone(),
-            NFTIdentifierMode::Hash => request_bridge_data.token_hashes.clone(),
-        },
-        from: user.clone().to_formatted_string(),
-        to: request_bridge_data.to.clone().to_string(),
-        request_id: request_id.clone(),
-        request_index: current_request_index.clone(),
-        to_chainid: to_chainid.clone(),
+        request_index: current_request_index.to_string()
     });
     lock::unlock_contract();
 }
@@ -434,47 +383,63 @@ pub extern "C" fn approve_unlock_nft() {
 
 #[no_mangle]
 pub extern "C" fn claim_unlock_nft() {
-    let caller = get_immediate_caller_key();
+    let user = runtime::get_named_arg("user");
+    let mut unlock_ids_to_claim = match get_named_arg_with_user_errors::<Vec<String>>("unlock_ids", Error::MissingUnlockIds, Error::InvalidUnlockIds) {
+        Ok(val) => val,
+        Err(_) => vec![]
+    };
     // let token_owner_key: Key = get_immediate_caller_key();
     let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
         CONTRACT_HASH_KEY_NAME,
         Error::MissingBridgeContractHash,
         Error::InvalidBridgeContractHash,
     );
-    let user_item_key = helpers::encode_dictionary_item_key(caller);
+    let user_item_key = helpers::encode_dictionary_item_key(user);
 
-    let user_unlock_ids_current =
+    let mut user_unlock_ids_current =
         get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key)
             .unwrap_or_revert();
+    
+    unlock_ids_to_claim = if unlock_ids_to_claim.len() == 0 {
+        user_unlock_ids_current.iter().map(|x| x.clone().unlock_id).collect()
+    } else {
+        unlock_ids_to_claim
+    };
 
     let mut unlock_ids = vec![];
-
-    for approve_unlock in user_unlock_ids_current {
-        let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
-        let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
-        let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
-        let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
+    let mut the_rest: Vec<ApproveUnlock> = vec![];
+    while user_unlock_ids_current.len() > 0 {
+        // remove the last element of the array to avoid gas cost
+        let approve_unlock = user_unlock_ids_current.remove(user_unlock_ids_current.len() - 1);
         let this_unlock_id = approve_unlock.unlock_id.clone();
-        unlock_ids.push(this_unlock_id);
-        cep78_transfer_to_user(
-            &this_nft_contract_hash,
-            this_bridge_contract_hash,
-            caller,
-            this_identifier_mode,
-            this_token_ids,
-            this_token_hashes,
-        );
+        if unlock_ids_to_claim.iter().any(|x| x.clone() == this_unlock_id) {
+            let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
+            let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
+            let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
+            let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
+            unlock_ids.push(this_unlock_id);
+            cep78_transfer_to_user(
+                &this_nft_contract_hash,
+                this_bridge_contract_hash,
+                user,
+                this_identifier_mode,
+                this_token_ids,
+                this_token_hashes,
+            );
+        } else {
+            the_rest.push(approve_unlock);
+        }
+        
     }
 
     events::emit(&NftBridgeEvent::ClaimUnlockNft {
-        token_owner: caller.clone(),
         unlock_ids: unlock_ids,
     });
 
     write_dictionary_value_from_key(
         USER_UNLOCK_ID_LIST,
         &user_item_key,
-        Vec::<ApproveUnlock>::new(),
+        the_rest
     );
 }
 

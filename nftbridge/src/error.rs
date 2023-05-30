@@ -31,7 +31,9 @@ pub enum Error {
     InvalidBridgeContractHash = 105,
     InvalidSupportedToken = 106,
     InvalidKey = 107,
-    ContractLocked = 108
+    ContractLocked = 108,
+    MissingUnlockIds = 109,
+    InvalidUnlockIds = 110,
 }
 
 impl From<Error> for ApiError {

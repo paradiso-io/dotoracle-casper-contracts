@@ -45,7 +45,9 @@ fn approve_unlock_nft() -> EntryPoint {
 fn claim_unlock_nft() -> EntryPoint {
     EntryPoint::new(
         String::from(CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME),
-        vec![],
+        vec![
+            Parameter::new("user", CLType::Key)
+        ],
         CLType::String,
         EntryPointAccess::Public,
         EntryPointType::Contract,
