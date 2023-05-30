@@ -24,9 +24,9 @@ fn request_bridge_nft() -> EntryPoint {
     )
 }
 
-fn approve_to_unlock_nft() -> EntryPoint {
+fn approve_unlock_nft() -> EntryPoint {
     EntryPoint::new(
-        String::from(APPROVE_TO_UNLOCK_NFT_ENTRY_POINT_NAME),
+        String::from(APPROVE_UNLOCK_NFT_ENTRY_POINT_NAME),
         vec![
             Parameter::new(ARG_TOKEN_IDS, CLType::List(Box::new(CLType::U64))),
             Parameter::new(ARG_TOKEN_HASHES, CLType::List(Box::new(CLType::String))),
@@ -104,16 +104,14 @@ pub(crate) fn default() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(request_bridge_nft());
     entry_points.add_entry_point(transfer_dev());
-    entry_points.add_entry_point(approve_to_unlock_nft());
+    entry_points.add_entry_point(approve_unlock_nft());
     entry_points.add_entry_point(transfer_owner());
     entry_points.add_entry_point(set_supported_token());
     entry_points.add_entry_point(claim_unlock_nft());
     entry_points.add_entry_point(init());
     entry_points.add_entry_point(EntryPoint::new(
         String::from("update_contract_hash_after_upgrade"),
-        vec![
-            Parameter::new(ARG_CONTRACT_HASH, CLType::Key),
-        ],
+        vec![Parameter::new(ARG_CONTRACT_HASH, CLType::Key)],
         CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
