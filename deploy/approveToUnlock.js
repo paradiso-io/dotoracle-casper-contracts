@@ -20,7 +20,7 @@ let KEYS = new Keys.Secp256K1.parseKeyPair(publicKey, Uint8Array.from(privateKey
 const test = async () => {
   const bridgeContractHash = await CWeb3.Contract.getActiveContractHash(nft_bridge_contract_package, CHAIN_NAME)
   const contract = await CWeb3.Contract.createInstanceWithRemoteABI(bridgeContractHash, NODE_ADDRESS, CHAIN_NAME)
-  const hash = await contract.contractCalls.approveToUnlockNft.makeDeployAndSend({
+  const hash = await contract.contractCalls.approveUnlockNft.makeDeployAndSend({
       keys: KEYS,
       args: {
         targetKey: KEYS.publicKey,

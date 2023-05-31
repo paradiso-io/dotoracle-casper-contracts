@@ -50,6 +50,46 @@
       "key": "uref-ea676f44e986d25a8cac634f0fbbeefa35bbbb122b7c14ecadf85a3d058b2480-007"
     },
     {
+      "name": "nft_bridge_custodian_10_contract_hash",
+      "key": "hash-0b18cd9df5ade3f9be780f4f14aa6ede610ed4cd5acb16a927a14fe12758c67f"
+    },
+    {
+      "name": "nft_bridge_custodian_10_contract_hash_wrapped",
+      "key": "uref-2dfd566666307ed93af7a876324c75b1bdf479ac9033fb2e0006fc763b2a233d-007"
+    },
+    {
+      "name": "nft_bridge_custodian_10_package_access_token",
+      "key": "uref-c3c4bc0abea9b39988189be906a9096f0308a5eeac7022a0ec88d8794fb2dca3-007"
+    },
+    {
+      "name": "nft_bridge_custodian_10_package_hash",
+      "key": "hash-e44cff6dbafbb0253226d185a922658797fb41a3072f108fe202475a951d7dcd"
+    },
+    {
+      "name": "nft_bridge_custodian_10_package_hash_wrapped",
+      "key": "uref-0becd935a4350d2ac7a9c992b8b0e7dce8e7d0e8b80731e4282a52cb29fe8512-007"
+    },
+    {
+      "name": "nft_bridge_custodian_11_contract_hash",
+      "key": "hash-dc01cd14e955a29c854d5d7f19c654bf98281db3c3a0709c13e94800c114c19f"
+    },
+    {
+      "name": "nft_bridge_custodian_11_contract_hash_wrapped",
+      "key": "uref-ed104852c3dc34dcce187b1878830351998d8208254a8c241393af8b7351dcfa-007"
+    },
+    {
+      "name": "nft_bridge_custodian_11_package_access_token",
+      "key": "uref-581c034cf636b9ff885e7af3341aa2c3c9547db436c101d1563b675cb65ea033-007"
+    },
+    {
+      "name": "nft_bridge_custodian_11_package_hash",
+      "key": "hash-01216e796247fccba49def258fba9c90f29777e7b131b7e4328b9127b0999382"
+    },
+    {
+      "name": "nft_bridge_custodian_11_package_hash_wrapped",
+      "key": "uref-b578899ffaa75306fcf56d55b63e578e88fc5d8589ad2c6a3675d93e0cb8469d-007"
+    },
+    {
       "name": "nft_bridge_custodian_2_contract_hash",
       "key": "hash-3eecbbbbd8f49dce8e3131c1672f4adbdbd09aaef5fe02acc4b4fad7ec48d2bc"
     },
@@ -168,6 +208,46 @@
     {
       "name": "nft_bridge_custodian_7_package_hash_wrapped",
       "key": "uref-e3dedeb5a890ce96f3677802ef73e913110daa0e75290c9d844e7d015746179b-007"
+    },
+    {
+      "name": "nft_bridge_custodian_8_contract_hash",
+      "key": "hash-6a3926ce09eca82b0d91c9a26c83923b9199d897ea476759c28c6298c23d6cc9"
+    },
+    {
+      "name": "nft_bridge_custodian_8_contract_hash_wrapped",
+      "key": "uref-0e3c8d71ff1e4ea029632ac0409680266441b8a347b0eddd38b7fc56deecdb85-007"
+    },
+    {
+      "name": "nft_bridge_custodian_8_package_access_token",
+      "key": "uref-2ac12fc4a8687911ea51e9651d5100ba2530c52b36a8e67d3311119c41254c80-007"
+    },
+    {
+      "name": "nft_bridge_custodian_8_package_hash",
+      "key": "hash-02ff23720a4c2f2c8e08bed6e88d3292cf45c10af8e9dda0274c9f5de9f5eaa6"
+    },
+    {
+      "name": "nft_bridge_custodian_8_package_hash_wrapped",
+      "key": "uref-b1eea7fd34bbe8b9e56a50d72544d0f0a09102751fff159ed9bf45da533c2b86-007"
+    },
+    {
+      "name": "nft_bridge_custodian_9_contract_hash",
+      "key": "hash-cf7ebb81bd3fed056e4a4b86cc6bc8a5a3c8db1ade36d10d2dcd101596476ad0"
+    },
+    {
+      "name": "nft_bridge_custodian_9_contract_hash_wrapped",
+      "key": "uref-1dfca549c8c6c2646ffddcff761b41484bf55f9e94af57da102320409fabc2e6-007"
+    },
+    {
+      "name": "nft_bridge_custodian_9_package_access_token",
+      "key": "uref-c1cbdf4edaa99f9f8b9dc43014723d9b97a228c65d68c521ed7996ab99b7e6c6-007"
+    },
+    {
+      "name": "nft_bridge_custodian_9_package_hash",
+      "key": "hash-84534983c295c529dd8137643cd753240ac5ac20b0ebf52700c4e5a14883bb7b"
+    },
+    {
+      "name": "nft_bridge_custodian_9_package_hash_wrapped",
+      "key": "uref-204468a07708562a219c6b60e20b1ecabbb6989fe9d9432ded3fec7ed7bf7e39-007"
     },
     {
       "name": "nft_bridge_custodian_contract_hash",

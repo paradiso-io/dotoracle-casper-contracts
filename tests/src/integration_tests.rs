@@ -156,7 +156,7 @@ fn test_unlock() {
     let mut unlock_id = "0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-93-".to_string() + &hex::encode(tc.nft_package_hash.into_hash().unwrap());
     unlock_id = unlock_id + "-96945816564243";
     // approve for unlock
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "approve_to_unlock_nft", runtime_args! {
+    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "approve_unlock_nft", runtime_args! {
         "target_key" => Key::from(*DEFAULT_ACCOUNT_ADDR),
         "unlock_id" => unlock_id,
         "token_ids" => vec![1u64],
@@ -167,6 +167,8 @@ fn test_unlock() {
 
     // claim
     exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "claim_unlock_nft", runtime_args! {
+        "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+        "unlock_ids_count" => 1u64
     }, true);
 
     // approve again

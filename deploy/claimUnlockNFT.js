@@ -20,6 +20,7 @@ const test = async () => {
   const hash = await contract.contractCalls.claimUnlockNft.makeDeployAndSend({
       keys: KEYS,
       args: {
+        user: KEYS.publicKey
       },
       paymentAmount: '40000000000'
   })
