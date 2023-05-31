@@ -35,7 +35,7 @@ use casper_contract::{
 use casper_types::{
     contracts::NamedKeys, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use casper_types_derive::{FromBytes, ToBytes, CLTyped};
+use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 
 use approve_to_unlock::ApproveUnlock;
 use events::NftBridgeEvent;
@@ -49,7 +49,7 @@ pub(crate) struct RequestBridge {
     request_index: U256,
     from: Key,
     to: String,
-    token_ids: Vec<String>
+    token_ids: Vec<String>,
 }
 
 #[no_mangle]
@@ -179,17 +179,29 @@ pub extern "C" fn request_bridge_nft() {
     let request_bridge_data = RequestBridge {
         nft_package_hash: contract_package_hash,
         identifier_mode: identifier_mode as u8,
-        to_chainid: to_chainid.clone(),
+        to_chainid: to_chainid,
         request_index: current_request_index,
-        from: user.clone(),
+        from: user,
         to: receiver_address,
         token_ids: match identifier_mode {
-            NFTIdentifierMode::Ordinal => token_identifiers.clone().into_iter().map(|x| x.get_index().unwrap().to_string()).collect(),
-            NFTIdentifierMode::Hash => token_identifiers.clone().into_iter().map(|x| x.get_hash().unwrap()).collect(),
-        }
+            NFTIdentifierMode::Ordinal => token_identifiers
+                .clone()
+                .into_iter()
+                .map(|x| x.get_index().unwrap().to_string())
+                .collect(),
+            NFTIdentifierMode::Hash => token_identifiers
+                .clone()
+                .into_iter()
+                .map(|x| x.get_hash().unwrap())
+                .collect(),
+        },
     };
 
-    write_dictionary_value_from_key(REQUEST_IDS, &current_request_index.to_string(), request_bridge_data);
+    write_dictionary_value_from_key(
+        REQUEST_IDS,
+        &current_request_index.to_string(),
+        request_bridge_data,
+    );
 
     set_key(REQUEST_INDEX, current_request_index);
 
@@ -202,7 +214,7 @@ pub extern "C" fn request_bridge_nft() {
         token_identifiers,
     );
     events::emit(&NftBridgeEvent::RequestBridgeNft {
-        request_index: current_request_index.to_string()
+        request_index: current_request_index.to_string(),
     });
     lock::unlock_contract();
 }
@@ -384,9 +396,13 @@ pub extern "C" fn approve_unlock_nft() {
 #[no_mangle]
 pub extern "C" fn claim_unlock_nft() {
     let user = runtime::get_named_arg("user");
-    let mut unlock_ids_count = match get_named_arg_with_user_errors::<u64>("unlock_ids_count", Error::MissingUnlockIds, Error::InvalidUnlockIds) {
+    let mut unlock_ids_count = match get_named_arg_with_user_errors::<u64>(
+        "unlock_ids_count",
+        Error::MissingUnlockIds,
+        Error::InvalidUnlockIds,
+    ) {
         Ok(val) => val,
-        Err(_) => 0
+        Err(_) => 0,
     };
     // let token_owner_key: Key = get_immediate_caller_key();
     let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
@@ -399,13 +415,13 @@ pub extern "C" fn claim_unlock_nft() {
     let mut user_unlock_ids_current =
         get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key)
             .unwrap_or_revert();
-    
-    unlock_ids_count = if unlock_ids_count == 0 || unlock_ids_count > user_unlock_ids_current.len() as u64 {
-        user_unlock_ids_current.len() as u64
-    } else {
-        unlock_ids_count
-    };
 
+    unlock_ids_count =
+        if unlock_ids_count == 0 || unlock_ids_count > user_unlock_ids_current.len() as u64 {
+            user_unlock_ids_current.len() as u64
+        } else {
+            unlock_ids_count
+        };
     let mut unlock_ids = vec![];
     while unlock_ids_count > 0 {
         // remove the last element of the array to avoid gas cost
@@ -431,11 +447,7 @@ pub extern "C" fn claim_unlock_nft() {
         unlock_ids: unlock_ids,
     });
 
-    write_dictionary_value_from_key(
-        USER_UNLOCK_ID_LIST,
-        &user_item_key,
-        user_unlock_ids_current
-    );
+    write_dictionary_value_from_key(USER_UNLOCK_ID_LIST, &user_item_key, user_unlock_ids_current);
 }
 
 fn cep78_transfer_from(
