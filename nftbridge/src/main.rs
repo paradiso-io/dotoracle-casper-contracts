@@ -424,6 +424,7 @@ pub extern "C" fn claim_unlock_nft() {
             this_token_ids,
             this_token_hashes,
         );
+        unlock_ids_count = unlock_ids_count - 1;
     }
 
     events::emit(&NftBridgeEvent::ClaimUnlockNft {
