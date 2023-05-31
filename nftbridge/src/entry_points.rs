@@ -47,7 +47,7 @@ fn claim_unlock_nft() -> EntryPoint {
         String::from(CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME),
         vec![
             Parameter::new("user", CLType::Key),
-            Parameter::new("unlock_ids", CLType::List(Box::new(CLType::String)))
+            Parameter::new("unlock_ids_count", CLType::U64)
         ],
         CLType::String,
         EntryPointAccess::Public,

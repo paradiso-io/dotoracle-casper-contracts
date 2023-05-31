@@ -384,9 +384,9 @@ pub extern "C" fn approve_unlock_nft() {
 #[no_mangle]
 pub extern "C" fn claim_unlock_nft() {
     let user = runtime::get_named_arg("user");
-    let mut unlock_ids_to_claim = match get_named_arg_with_user_errors::<Vec<String>>("unlock_ids", Error::MissingUnlockIds, Error::InvalidUnlockIds) {
+    let mut unlock_ids_count = match get_named_arg_with_user_errors::<u64>("unlock_ids_count", Error::MissingUnlockIds, Error::InvalidUnlockIds) {
         Ok(val) => val,
-        Err(_) => vec![]
+        Err(_) => 0
     };
     // let token_owner_key: Key = get_immediate_caller_key();
     let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
@@ -400,36 +400,30 @@ pub extern "C" fn claim_unlock_nft() {
         get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key)
             .unwrap_or_revert();
     
-    unlock_ids_to_claim = if unlock_ids_to_claim.len() == 0 {
-        user_unlock_ids_current.iter().map(|x| x.clone().unlock_id).collect()
+    unlock_ids_count = if unlock_ids_count == 0 || unlock_ids_count > user_unlock_ids_current.len() as u64 {
+        user_unlock_ids_current.len() as u64
     } else {
-        unlock_ids_to_claim
+        unlock_ids_count
     };
 
     let mut unlock_ids = vec![];
-    let mut the_rest: Vec<ApproveUnlock> = vec![];
-    while user_unlock_ids_current.len() > 0 {
+    while unlock_ids_count > 0 {
         // remove the last element of the array to avoid gas cost
         let approve_unlock = user_unlock_ids_current.remove(user_unlock_ids_current.len() - 1);
         let this_unlock_id = approve_unlock.unlock_id.clone();
-        if unlock_ids_to_claim.iter().any(|x| x.clone() == this_unlock_id) {
-            let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
-            let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
-            let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
-            let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
-            unlock_ids.push(this_unlock_id);
-            cep78_transfer_to_user(
-                &this_nft_contract_hash,
-                this_bridge_contract_hash,
-                user,
-                this_identifier_mode,
-                this_token_ids,
-                this_token_hashes,
-            );
-        } else {
-            the_rest.push(approve_unlock);
-        }
-        
+        let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
+        let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
+        let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
+        let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
+        unlock_ids.push(this_unlock_id);
+        cep78_transfer_to_user(
+            &this_nft_contract_hash,
+            this_bridge_contract_hash,
+            user,
+            this_identifier_mode,
+            this_token_ids,
+            this_token_hashes,
+        );
     }
 
     events::emit(&NftBridgeEvent::ClaimUnlockNft {
@@ -439,7 +433,7 @@ pub extern "C" fn claim_unlock_nft() {
     write_dictionary_value_from_key(
         USER_UNLOCK_ID_LIST,
         &user_item_key,
-        the_rest
+        user_unlock_ids_current
     );
 }
 
