@@ -67,6 +67,33 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
     
     builder.exec(deploy_nft).expect_success().commit();
 
+    let deploy_nft_wrapped = ExecuteRequestBuilder::standard(
+        *DEFAULT_ACCOUNT_ADDR,
+        "cep78wrapped.wasm",
+        runtime_args! {
+            "collection_name" => "cn_wrapped".to_string(),
+            "collection_symbol" => "cb".to_string(),
+            "total_token_supply" => 10000u64,
+            "allow_minting" => true,
+            "ownership_mode" => 2u8,
+            "nft_kind" => 1u8,
+            "holder_mode" => 2u8,
+            "whitelist_mode" => 0u8,
+            "json_schema" => "",
+            "receipt_name" => "",
+            "identifier_mode" => 0u8,
+            "nft_metadata_kind" => 0u8,
+            "metadata_mutability" => 0u8,
+            "owner_reverse_lookup_mode" =>1u8,
+            "events_mode" => 2u8,
+            "contract_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+            "minter" => Key::from(*DEFAULT_ACCOUNT_ADDR)
+        },
+    )
+    .build();
+    
+    builder.exec(deploy_nft_wrapped).expect_success().commit();
+
     let account = builder
         .get_account(*DEFAULT_ACCOUNT_ADDR)
         .expect("should have account");
@@ -79,6 +106,28 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
         .expect("should have contract hash");
 
     let nft_package_hash = Key::from(nft_package_hash);
+
+    let nft_package_hash_wrapped = account
+        .named_keys()
+        .get("cep78_contract_package_cn_wrapped")
+        .and_then(|key| key.into_hash())
+        .map(ContractPackageHash::new)
+        .expect("should have contract hash");
+
+    let nft_package_hash_wrapped = Key::from(nft_package_hash_wrapped);
+
+    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash_wrapped, "approve_to_claim", runtime_args! {
+        "token_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+        "mint_id" => "0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-94-0xec83b9dd29d22d53870afc9223689294dc2153d1-43113".to_string(),
+        "token_ids" => vec![10u64],
+        "token_meta_datas" => vec![r#"{"name":"John Doe","token_uri":"https://www.barfoo.com","checksum":"940bffb3f2bba35f84313aa26da09ece3ad47045c6a1292c2bbd2df4ab1a55fb"}"#],
+    }, true);
+
+    // claim
+    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash_wrapped, "claim", runtime_args! {
+        "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+        "mint_ids_count" => 1u64
+    }, true);
 
     // mint nft 
     exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash, "mint", runtime_args! {
