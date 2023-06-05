@@ -47,7 +47,7 @@ fn claim_unlock_nft() -> EntryPoint {
         String::from(CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME),
         vec![
             Parameter::new("user", CLType::Key),
-            Parameter::new("unlock_ids_count", CLType::U64)
+            Parameter::new("unlock_ids_count", CLType::U64),
         ],
         CLType::String,
         EntryPointAccess::Public,
@@ -102,6 +102,32 @@ fn set_supported_token() -> EntryPoint {
     )
 }
 
+fn set_max_nfts_per_transaction() -> EntryPoint {
+    EntryPoint::new(
+        String::from(SET_MAX_NFTS_PER_TRANSACTION_ENTRY_POINT_NAME),
+        vec![Parameter::new(ARG_IS_MAX_NFTS_PER_TRANSACTION, CLType::U64)],
+        CLType::Unit,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
+
+fn migrate_bridge() -> EntryPoint {
+    EntryPoint::new(
+        String::from(MIGRATE_BRIDGE_ENTRY_POINT_NAME),
+        vec![
+            Parameter::new(ARG_OLD_VERSION_BRIDGE_KEY, CLType::Key),
+            Parameter::new(ARG_NFT_PACKAGE_HASH, CLType::Key),
+            Parameter::new(ARG_IDENTIFIER_MODE, u8::cl_type()),
+            Parameter::new(ARG_TOKEN_IDS, CLType::List(Box::new(CLType::U64))),
+            Parameter::new(ARG_TOKEN_HASHES, CLType::List(Box::new(CLType::String))),
+        ],
+        CLType::String,
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    )
+}
+
 /// Returns the default set of ERC20 token entry points.
 pub(crate) fn default() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -119,5 +145,7 @@ pub(crate) fn default() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(set_max_nfts_per_transaction());
+    entry_points.add_entry_point(migrate_bridge());
     entry_points
 }

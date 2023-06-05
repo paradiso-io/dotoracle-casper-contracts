@@ -73,6 +73,16 @@ pub extern "C" fn init() {
     storage::new_dictionary(SUPPORTED_TOKEN).unwrap_or_revert_with(Error::FailedToCreateDictionary);
     storage::new_dictionary(USER_UNLOCK_ID_LIST)
         .unwrap_or_revert_with(Error::FailedToCreateDictionary);
+    runtime::put_key(
+        "max_nfts_per_transaction",
+        Key::from(storage::new_uref(1u64)),
+    );
+    storage::new_dictionary(IS_BRIDGE_VERSION)
+        .unwrap_or_revert_with(Error::FailedToCreateDictionary);
+
+    let contract_hash_dictionary_key: String = make_dictionary_item_key_for_contract(contract_hash);
+
+    write_dictionary_value_from_key(IS_BRIDGE_VERSION, &contract_hash_dictionary_key, true);
 }
 
 #[no_mangle]
@@ -89,6 +99,9 @@ pub extern "C" fn update_contract_hash_after_upgrade() {
     }
     let contract_hash: Key = runtime::get_named_arg(ARG_CONTRACT_HASH);
     set_key(CONTRACT_HASH_KEY_NAME, contract_hash);
+    let contract_hash_dictionary_key: String = make_dictionary_item_key_for_contract(contract_hash);
+
+    write_dictionary_value_from_key(IS_BRIDGE_VERSION, &contract_hash_dictionary_key, true);
 }
 
 #[no_mangle]
@@ -167,7 +180,8 @@ pub extern "C" fn request_bridge_nft() {
     );
 
     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
-    if token_identifiers.len() > 10 {
+    let current_max_nfts_per_transaction: u64 = get_key("max_nfts_per_transaction").unwrap();
+    if token_identifiers.len() as u64 > current_max_nfts_per_transaction {
         runtime::revert(Error::TooManyTokenIds);
     }
 
@@ -339,7 +353,8 @@ pub extern "C" fn approve_unlock_nft() {
 
     let identifier_mode = get_identifier_mode_from_runtime_args();
     let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
-    if token_identifiers.len() > 10 {
+    let current_max_nfts_per_transaction: u64 = get_key("max_nfts_per_transaction").unwrap();
+    if token_identifiers.len() as u64 > current_max_nfts_per_transaction {
         runtime::revert(Error::TooManyTokenIds);
     }
     let target: Key = runtime::get_named_arg(ARG_TARGET_KEY);
@@ -448,6 +463,64 @@ pub extern "C" fn claim_unlock_nft() {
     });
 
     write_dictionary_value_from_key(USER_UNLOCK_ID_LIST, &user_item_key, user_unlock_ids_current);
+}
+#[no_mangle]
+pub extern "C" fn set_max_nfts_per_transaction() {
+    let caller = helpers::get_verified_caller().unwrap_or_revert();
+    let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
+        DEV,
+        Error::MissingDev,
+        Error::InvalidDev,
+    );
+
+    if caller != current_dev {
+        runtime::revert(Error::InvalidDev);
+    }
+    let max_nfts_per_transaction: u64 = runtime::get_named_arg("max_nfts_per_transaction");
+    if max_nfts_per_transaction > 10u64 || max_nfts_per_transaction == 0u64 {
+        runtime::revert(Error::InvalidContext)
+    }
+    set_key("max_nfts_per_transaction", max_nfts_per_transaction);
+}
+
+#[no_mangle]
+pub extern "C" fn migrate_bridge() {
+    let caller = helpers::get_verified_caller().unwrap_or_revert();
+    let current_dev = helpers::get_stored_value_with_user_errors::<Key>(
+        DEV,
+        Error::MissingDev,
+        Error::InvalidDev,
+    );
+
+    if caller != current_dev {
+        runtime::revert(Error::InvalidDev);
+    }
+    let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
+        CONTRACT_HASH_KEY_NAME,
+        Error::MissingBridgeContractHash,
+        Error::InvalidBridgeContractHash,
+    );
+
+    let old_version_bridge_key: Key = runtime::get_named_arg(ARG_OLD_VERSION_BRIDGE_KEY);
+    let old_version_dictionary_key: String =
+        make_dictionary_item_key_for_contract(old_version_bridge_key);
+    let old_version_item =
+        get_dictionary_value_from_key::<bool>(IS_BRIDGE_VERSION, &old_version_dictionary_key);
+    if old_version_item.unwrap() != true {
+        runtime::revert(Error::InvalidContext)
+    }
+
+    let contract_package_hash: Key = runtime::get_named_arg(ARG_NFT_PACKAGE_HASH);
+    let identifier_mode = get_identifier_mode_from_runtime_args();
+    let token_identifiers = get_token_identifiers_from_runtime_args(&identifier_mode);
+
+    cep78_transfer_from(
+        &contract_package_hash,
+        old_version_bridge_key,
+        this_bridge_contract_hash,
+        identifier_mode,
+        token_identifiers,
+    );
 }
 
 fn cep78_transfer_from(

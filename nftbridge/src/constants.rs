@@ -26,6 +26,8 @@ pub const USER_REWARD_PER_TOKEN_PAID_KEY_NAME: &str = "user_reward_per_token_pai
 
 pub const REQUEST_BRIDGE_ENTRY_POINT_NAME: &str = "request_bridge_nft";
 pub const SET_SUPPORTED_TOKEN_ENTRY_POINT_NAME: &str = "set_supported_token";
+pub const SET_MAX_NFTS_PER_TRANSACTION_ENTRY_POINT_NAME: &str = "set_max_nfts_per_transaction";
+pub const MIGRATE_BRIDGE_ENTRY_POINT_NAME: &str = "migrate_bridge";
 pub const CLAIM_UNLOCK_NFT_ENTRY_POINT_NAME: &str = "claim_unlock_nft";
 pub const APPROVE_UNLOCK_NFT_ENTRY_POINT_NAME: &str = "approve_unlock_nft";
 pub const TRANSFER_OWNER_ENTRY_POINT_NAME: &str = "transfer_owner";
@@ -45,6 +47,7 @@ pub const ARG_CONTRACT_OWNER: &str = "contract_owner";
 pub const ARG_CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
 pub const ARG_SUPPORTED_TOKEN: &str = "supported_token";
 pub const ARG_IS_SUPPORTED_TOKEN: &str = "is_supported_token";
+pub const ARG_IS_MAX_NFTS_PER_TRANSACTION: &str = "max_nfts_per_transaction";
 
 /// Name of named-key for `name`.
 pub const NAME_KEY_NAME: &str = "name";
@@ -127,6 +130,7 @@ pub const ARG_HOLDER_MODE: &str = "holder_mode";
 pub const ARG_WHITELIST_MODE: &str = "whitelist_mode";
 pub const ARG_NFT_KIND: &str = "nft_kind";
 pub const ARG_JSON_SCHEMA: &str = "json_schema";
+pub const ARG_OLD_VERSION_BRIDGE_KEY: &str = "old_version_bridge_key";
 
 pub const ARG_RECEIPT_NAME: &str = "receipt_name";
 pub const ARG_CONTRACT_WHITELIST: &str = "contract_whitelist";
@@ -189,3 +193,4 @@ pub const ENTRY_POINT_SET_APPROVE_FOR_ALL: &str = "set_approval_for_all";
 pub const ENTRY_POINT_SET_TOKEN_METADATA: &str = "set_token_metadata";
 pub const SUPPORTED_TOKEN: &str = "supported_token";
 pub const USER_UNLOCK_ID_LIST: &str = "user_unlock_id_list";
+pub const IS_BRIDGE_VERSION: &str = "is_bridge_version";
