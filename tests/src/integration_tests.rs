@@ -4,14 +4,14 @@ use casper_engine_test_support::{
 };
 
 use casper_types::{
-    runtime_args, ContractPackageHash, Key, RuntimeArgs, account::AccountHash, ContractHash, U256
+    account::AccountHash, runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 
 #[derive(Copy, Clone)]
 struct TestContext {
     nft_package_hash: Key,
     nft_bridge_contract_hash: Key,
-    nft_bridge: Key
+    nft_bridge: Key,
 }
 fn exec_call(
     builder: &mut InMemoryWasmTestBuilder,
@@ -64,7 +64,7 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
         },
     )
     .build();
-    
+
     builder.exec(deploy_nft).expect_success().commit();
 
     let deploy_nft_wrapped = ExecuteRequestBuilder::standard(
@@ -91,7 +91,7 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
         },
     )
     .build();
-    
+
     builder.exec(deploy_nft_wrapped).expect_success().commit();
 
     let account = builder
@@ -116,25 +116,46 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
 
     let nft_package_hash_wrapped = Key::from(nft_package_hash_wrapped);
 
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash_wrapped, "approve_to_claim", runtime_args! {
-        "token_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR),
-        "mint_id" => "0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-94-0xec83b9dd29d22d53870afc9223689294dc2153d1-43113".to_string(),
-        "token_ids" => vec![10u64],
-        "token_meta_datas" => vec![r#"{"name":"John Doe","token_uri":"https://www.barfoo.com","checksum":"940bffb3f2bba35f84313aa26da09ece3ad47045c6a1292c2bbd2df4ab1a55fb"}"#],
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        nft_package_hash_wrapped,
+        "approve_to_claim",
+        runtime_args! {
+            "token_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+            "mint_id" => "0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-94-0xec83b9dd29d22d53870afc9223689294dc2153d1-43113".to_string(),
+            "token_ids" => vec![10u64],
+            "token_meta_datas" => vec![r#"{"name":"John Doe","token_uri":"https://www.barfoo.com","checksum":"940bffb3f2bba35f84313aa26da09ece3ad47045c6a1292c2bbd2df4ab1a55fb"}"#],
+        },
+        true,
+    );
 
     // claim
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash_wrapped, "claim", runtime_args! {
-        "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
-        "mint_ids_count" => 1u64
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        nft_package_hash_wrapped,
+        "claim",
+        runtime_args! {
+            "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+            "mint_ids_count" => 1u64
+        },
+        true,
+    );
 
-    // mint nft 
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash, "mint", runtime_args! {
-        "count" => 10u64,
-        "token_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR)
-    }, true);
-    
+    // mint nft
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        nft_package_hash,
+        "mint",
+        runtime_args! {
+            "count" => 10u64,
+            "token_owner" => Key::from(*DEFAULT_ACCOUNT_ADDR)
+        },
+        true,
+    );
+
     let deploy_bridge = ExecuteRequestBuilder::standard(
         *DEFAULT_ACCOUNT_ADDR,
         "contract.wasm",
@@ -145,7 +166,7 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
         },
     )
     .build();
-    
+
     builder.exec(deploy_bridge).expect_success().commit();
 
     let account = builder
@@ -169,20 +190,34 @@ fn setup() -> (InMemoryWasmTestBuilder, TestContext) {
     let bridge_package_hash = Key::from(bridge_package_hash);
     let bridge_contract_hash = Key::from(bridge_contract_hash);
 
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, bridge_package_hash, "set_supported_token", runtime_args! {
-        "supported_token" => nft_package_hash,
-        "is_supported_token" => true
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        bridge_package_hash,
+        "set_supported_token",
+        runtime_args! {
+            "supported_token" => nft_package_hash,
+            "is_supported_token" => true
+        },
+        true,
+    );
 
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, nft_package_hash, "set_approval_for_all", runtime_args! {
-        "operator" => bridge_contract_hash,
-        "approve_all" => true
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        nft_package_hash,
+        "set_approval_for_all",
+        runtime_args! {
+            "operator" => bridge_contract_hash,
+            "approve_all" => true
+        },
+        true,
+    );
 
     let tc = TestContext {
         nft_package_hash,
         nft_bridge: bridge_package_hash,
-        nft_bridge_contract_hash: bridge_contract_hash
+        nft_bridge_contract_hash: bridge_contract_hash,
     };
 
     (builder, tc)
@@ -193,47 +228,81 @@ fn test_unlock() {
     let (mut builder, tc) = setup();
 
     // request bridge
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "request_bridge_nft", runtime_args! {
-        "nft_package_hash" => tc.nft_package_hash,
-        "to_chainid" => U256::from(43113u64),
-        "identifier_mode" => 0u8,
-        "request_id" => "1111111111111111111111111111111111111111111111111111111111111111".to_string(),
-        "token_ids" => vec![1u64],
-        "receiver_address" => "0xbf26a30547a7dda6e86fc3C33396F28FFf6902c3".to_string()
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        tc.nft_bridge,
+        "request_bridge_nft",
+        runtime_args! {
+            "nft_package_hash" => tc.nft_package_hash,
+            "to_chainid" => U256::from(43113u64),
+            "identifier_mode" => 0u8,
+            "request_id" => "1111111111111111111111111111111111111111111111111111111111111111".to_string(),
+            "token_ids" => vec![1u64],
+            "receiver_address" => "0xbf26a30547a7dda6e86fc3C33396F28FFf6902c3".to_string()
+        },
+        true,
+    );
 
     let mut unlock_id = "0x7788d03de297137446ae4d66a5630d40064e8ec398305c7189f717e4b41914e2-43113-96945816564243-93-".to_string() + &hex::encode(tc.nft_package_hash.into_hash().unwrap());
-    unlock_id = unlock_id + "-96945816564243";
+    unlock_id += "-96945816564243";
     // approve for unlock
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "approve_unlock_nft", runtime_args! {
-        "target_key" => Key::from(*DEFAULT_ACCOUNT_ADDR),
-        "unlock_id" => unlock_id,
-        "token_ids" => vec![1u64],
-        "from_chainid" => U256::from(43113u64),
-        "identifier_mode" => 0u8,
-        "nft_package_hash" => tc.nft_package_hash
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        tc.nft_bridge,
+        "approve_unlock_nft",
+        runtime_args! {
+            "target_key" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+            "unlock_id" => unlock_id,
+            "token_ids" => vec![1u64],
+            "from_chainid" => U256::from(43113u64),
+            "identifier_mode" => 0u8,
+            "nft_package_hash" => tc.nft_package_hash
+        },
+        true,
+    );
 
     // claim
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "claim_unlock_nft", runtime_args! {
-        "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
-        "unlock_ids_count" => 1u64
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        tc.nft_bridge,
+        "claim_unlock_nft",
+        runtime_args! {
+            "user" => Key::from(*DEFAULT_ACCOUNT_ADDR),
+            "unlock_ids_count" => 1u64
+        },
+        true,
+    );
 
     // approve again
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_package_hash, "set_approval_for_all", runtime_args! {
-        "operator" => tc.nft_bridge_contract_hash,
-        "approve_all" => true
-    }, true);
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        tc.nft_package_hash,
+        "set_approval_for_all",
+        runtime_args! {
+            "operator" => tc.nft_bridge_contract_hash,
+            "approve_all" => true
+        },
+        true,
+    );
 
     // request bridge again
-    exec_call(&mut builder, *DEFAULT_ACCOUNT_ADDR, tc.nft_bridge, "request_bridge_nft", runtime_args! {
-        "nft_package_hash" => tc.nft_package_hash,
-        "to_chainid" => U256::from(43113u64),
-        "identifier_mode" => 0u8,
-        "request_id" => "1111111111111111111111111111111111111111111111111111111111111112".to_string(),
-        "token_ids" => vec![1u64],
-        "receiver_address" => "0xbf26a30547a7dda6e86fc3C33396F28FFf6902c3".to_string()
-    }, true);
-
+    exec_call(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        tc.nft_bridge,
+        "request_bridge_nft",
+        runtime_args! {
+            "nft_package_hash" => tc.nft_package_hash,
+            "to_chainid" => U256::from(43113u64),
+            "identifier_mode" => 0u8,
+            "request_id" => "1111111111111111111111111111111111111111111111111111111111111112".to_string(),
+            "token_ids" => vec![1u64],
+            "receiver_address" => "0xbf26a30547a7dda6e86fc3C33396F28FFf6902c3".to_string()
+        },
+        true,
+    );
 }

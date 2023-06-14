@@ -119,8 +119,8 @@ fn call() {
             runtime_args! {
                 "contract_hash" => Key::from(contract_hash),
                 "contract_package_hash" => Key::from(contract_package_hash),
-                "contract_owner" => Key::from(contract_owner),
-                "dev" => Key::from(dev),
+                "contract_owner" => contract_owner,
+                "dev" => dev,
             },
         );
     } else {
@@ -156,11 +156,7 @@ pub extern "C" fn request_bridge_nft() {
 
     let supported_token_item =
         get_dictionary_value_from_key::<bool>(SUPPORTED_TOKEN, &contract_package_dictionary_key);
-    let supported = if supported_token_item.is_some() && supported_token_item.unwrap_or_revert() {
-        true
-    } else {
-        false
-    };
+    let supported = supported_token_item.is_some() && supported_token_item.unwrap_or_revert();
     if !supported {
         runtime::revert(Error::InvalidSupportedToken);
     }
@@ -193,7 +189,7 @@ pub extern "C" fn request_bridge_nft() {
     let request_bridge_data = RequestBridge {
         nft_package_hash: contract_package_hash,
         identifier_mode: identifier_mode as u8,
-        to_chainid: to_chainid,
+        to_chainid,
         request_index: current_request_index,
         from: user,
         to: receiver_address,
@@ -227,7 +223,7 @@ pub extern "C" fn request_bridge_nft() {
         identifier_mode,
         token_identifiers,
     );
-    events::emit(&NftBridgeEvent::RequestBridgeNft {
+    events::emit(&NftBridgeEvent::RequestBridge {
         request_index: current_request_index.to_string(),
     });
     lock::unlock_contract();
@@ -322,7 +318,7 @@ pub extern "C" fn approve_unlock_nft() {
 
     //verify unlock id
     //tx - from chain id - to chain id- index - origin token address- origin chain id
-    let unlock_id_parts: Vec<&str> = unlock_id.split("-").collect();
+    let unlock_id_parts: Vec<&str> = unlock_id.split('-').collect();
     if unlock_id_parts.len() != 6 {
         runtime::revert(Error::UnlockIdIllFormatted);
     }
@@ -380,9 +376,9 @@ pub extern "C" fn approve_unlock_nft() {
     // add approve
 
     let add_approve: ApproveUnlock = ApproveUnlock {
-        token_ids: token_ids.clone(),
-        token_hashes: token_hashes.clone(),
-        nft_contract_hash: contract_pacakge_hash.clone(),
+        token_ids,
+        token_hashes,
+        nft_contract_hash: contract_pacakge_hash,
         identifier_mode: match identifier_mode {
             NFTIdentifierMode::Ordinal => 0u8,
             NFTIdentifierMode::Hash => 1u8,
@@ -394,7 +390,7 @@ pub extern "C" fn approve_unlock_nft() {
     let user_unlock_ids_current =
         get_dictionary_value_from_key::<Vec<ApproveUnlock>>(USER_UNLOCK_ID_LIST, &user_item_key);
 
-    let mut user_unlock_ids_new = if user_unlock_ids_current.is_some() {
+    let mut user_unlock_ids_new = if let Some(..) = user_unlock_ids_current {
         user_unlock_ids_current.unwrap()
     } else {
         Vec::<ApproveUnlock>::new()
@@ -403,7 +399,7 @@ pub extern "C" fn approve_unlock_nft() {
     user_unlock_ids_new.push(add_approve);
     write_dictionary_value_from_key(USER_UNLOCK_ID_LIST, &user_item_key, user_unlock_ids_new);
 
-    events::emit(&NftBridgeEvent::ApproveUnlockNft {
+    events::emit(&NftBridgeEvent::ApproveUnlock {
         unlock_id: unlock_id.clone(),
     });
 }
@@ -411,14 +407,12 @@ pub extern "C" fn approve_unlock_nft() {
 #[no_mangle]
 pub extern "C" fn claim_unlock_nft() {
     let user = runtime::get_named_arg("user");
-    let mut unlock_ids_count = match get_named_arg_with_user_errors::<u64>(
+    let mut unlock_ids_count = get_named_arg_with_user_errors::<u64>(
         "unlock_ids_count",
         Error::MissingUnlockIds,
         Error::InvalidUnlockIds,
-    ) {
-        Ok(val) => val,
-        Err(_) => 0,
-    };
+    )
+    .unwrap_or(0);
     // let token_owner_key: Key = get_immediate_caller_key();
     let this_bridge_contract_hash = helpers::get_stored_value_with_user_errors::<Key>(
         CONTRACT_HASH_KEY_NAME,
@@ -442,8 +436,8 @@ pub extern "C" fn claim_unlock_nft() {
         // remove the last element of the array to avoid gas cost
         let approve_unlock = user_unlock_ids_current.remove(user_unlock_ids_current.len() - 1);
         let this_unlock_id = approve_unlock.unlock_id.clone();
-        let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash.clone();
-        let this_identifier_mode: u8 = approve_unlock.identifier_mode.clone();
+        let this_nft_contract_hash: Key = approve_unlock.nft_contract_hash;
+        let this_identifier_mode: u8 = approve_unlock.identifier_mode;
         let this_token_ids: Vec<u64> = approve_unlock.token_ids.clone();
         let this_token_hashes: Vec<String> = approve_unlock.token_hashes.clone();
         unlock_ids.push(this_unlock_id);
@@ -455,12 +449,10 @@ pub extern "C" fn claim_unlock_nft() {
             this_token_ids,
             this_token_hashes,
         );
-        unlock_ids_count = unlock_ids_count - 1;
+        unlock_ids_count -= 1;
     }
 
-    events::emit(&NftBridgeEvent::ClaimUnlockNft {
-        unlock_ids: unlock_ids,
-    });
+    events::emit(&NftBridgeEvent::ClaimUnlock { unlock_ids });
 
     write_dictionary_value_from_key(USER_UNLOCK_ID_LIST, &user_item_key, user_unlock_ids_current);
 }
@@ -506,7 +498,7 @@ pub extern "C" fn migrate_bridge() {
         make_dictionary_item_key_for_contract(old_version_bridge_key);
     let old_version_item =
         get_dictionary_value_from_key::<bool>(IS_BRIDGE_VERSION, &old_version_dictionary_key);
-    if old_version_item.unwrap() != true {
+    if !old_version_item.unwrap() {
         runtime::revert(Error::InvalidContext)
     }
 

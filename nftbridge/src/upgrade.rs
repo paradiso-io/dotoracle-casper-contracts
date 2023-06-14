@@ -66,5 +66,4 @@ pub fn upgrade_contract(
     }
 
     Key::from(contract_hash)
-
 }

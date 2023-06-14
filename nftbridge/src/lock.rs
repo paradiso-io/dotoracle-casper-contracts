@@ -1,6 +1,6 @@
-use crate::helpers::{self, *};
 use crate::constants::*;
 use crate::error::Error;
+use crate::helpers::{self, *};
 use casper_contract::contract_api::{runtime, storage};
 
 pub fn when_not_locked() {
@@ -17,8 +17,5 @@ pub fn unlock_contract() {
 }
 
 pub fn init() {
-    runtime::put_key(
-        IS_LOCKED,
-        storage::new_uref(false).into(),
-    );
+    runtime::put_key(IS_LOCKED, storage::new_uref(false).into());
 }

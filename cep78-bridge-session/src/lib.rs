@@ -25,7 +25,7 @@ pub extern "C" fn call() {
         },
     );
 
-    let _: (String, Key) = runtime::call_contract(
+    let _: () = runtime::call_contract(
         bridge_contract_hash.into_hash().unwrap().into(),
         "request_bridge_nft",
         runtime_args! {

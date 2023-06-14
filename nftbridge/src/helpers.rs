@@ -45,11 +45,10 @@ pub(crate) fn get_key<T: FromBytes + CLTyped>(name: &str) -> Option<T> {
 }
 
 pub(crate) fn get_key_from_address(addr: &Address) -> Key {
-    let self_key = match *addr {
+    match *addr {
         Address::Account(acc) => Key::from(acc),
         Address::Contract(contract_package_hash) => Key::from(contract_package_hash),
-    };
-    self_key
+    }
 }
 
 pub(crate) fn set_key<T: ToBytes + CLTyped>(name: &str, value: T) {
@@ -278,9 +277,7 @@ pub(crate) fn get_token_identifiers_from_runtime_args(
 
 pub(crate) fn get_identifier_mode_from_runtime_args() -> NFTIdentifierMode {
     let identifier_mode_u8: u8 = runtime::get_named_arg(ARG_IDENTIFIER_MODE);
-    let identifier_mode =
-        NFTIdentifierMode::try_from(identifier_mode_u8).unwrap_or(NFTIdentifierMode::Ordinal);
-    identifier_mode
+    NFTIdentifierMode::try_from(identifier_mode_u8).unwrap_or(NFTIdentifierMode::Ordinal)
 }
 
 pub(crate) fn get_named_arg_with_user_errors<T: FromBytes>(

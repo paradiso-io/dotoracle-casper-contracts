@@ -23,7 +23,7 @@ pub extern "C" fn call() {
         },
     );
 
-    let _: (String, Key) = runtime::call_versioned_contract(
+    let _: () = runtime::call_versioned_contract(
         bridge_package_hash.into_hash().unwrap().into(),
         None,
         "request_bridge_erc20",
