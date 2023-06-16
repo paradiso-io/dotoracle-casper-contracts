@@ -2,7 +2,6 @@ node_modules
 .env
 keys.json
 target
-tests/wasm
 keys.json
 .DS_store
 yarn.lock
