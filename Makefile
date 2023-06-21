@@ -53,6 +53,5 @@ lint: clippy
 clean:
 	cd nftbridge && cargo clean
 	cd erc20-bridge-session && cargo clean
-	cd cep78-bridge-sessio && cargo clean
+	cd cep78-bridge-session && cargo clean
 	cd tests && cargo clean
-	rm -rf tests/wasm
