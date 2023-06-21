@@ -6,3 +6,4 @@ tests/wasm
 keys.json
 .DS_store
 yarn.lock
+deploy-local
